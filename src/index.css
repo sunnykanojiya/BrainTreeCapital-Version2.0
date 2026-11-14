@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Libre+Baskerville:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Inter', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #0a1b3d;
+  background: #eef4fa;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 88px;
+}
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #eef4fa;
+  color: #0a1b3d;
+}
+
+* { box-sizing: border-box; }
+
+#root { min-height: 100vh; }
+
+.brand-serif {
+  font-family: 'Libre Baskerville', serif;
+  font-weight: 400;
+}
+
+.brand-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  border-radius: 999px;
+  border: 0;
+  background: #fff4d6;
+  color: #7a5410;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: 0;
+}
+
+.primary-button,
+.secondary-button,
+button,
+a {
+  transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+
+.primary-button:not(.bg-white):hover {
+  background-color: #1b44c8;
+}
+
+.primary-button:active {
+  transform: scale(0.98);
+}
+
+.primary-button.bg-white:hover {
+  background-color: #f5f8fd;
+}
+
+.secondary-button:hover {
+  border-color: #2150e8;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid #2150e8;
+  outline-offset: 2px;
+}
+
+button:disabled,
+a[aria-disabled='true'] {
+  color: #a9b6cc;
+  cursor: not-allowed;
+}
+
+.showcase-panel {
+  aspect-ratio: 640 / 680;
+  container-type: inline-size;
+  height: auto;
+  border-radius: clamp(24px, 2.78vw, 40px);
+}
+
+.showcase-ring-outer {
+  width: 81.25%;
+  aspect-ratio: 1;
+}
+
+.showcase-ring-inner {
+  width: 62.5%;
+  aspect-ratio: 1;
+}
+
+.showcase-phone {
+  width: 46.875%;
+  aspect-ratio: 10 / 19;
+  border-width: clamp(4px, 1.25cqw, 8px);
+  border-radius: clamp(24px, 6.875cqw, 44px);
+  container-type: inline-size;
+  overflow: hidden;
+}
+
+.phone-screen {
+  border-radius: 11.667cqw;
+}
+
+.portfolio-chart-line {
+  transition: d 350ms ease;
+}
+
+.pyramid-layers:has(.pyramid-layer:hover) .pyramid-layer:not(:hover),
+.pyramid-layers:has(.pyramid-layer:focus-visible) .pyramid-layer:not(:focus-visible) {
+  opacity: 0.6;
+}
+
+.pyramid-layer {
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+
+.pyramid-layer:hover,
+.pyramid-layer:focus-visible {
+  transform: translateY(-2px);
+}
+
+[data-reveal-card] {
+  box-shadow: 0 0 0 1px transparent;
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+
+[data-reveal-card]:hover {
+  box-shadow: 0 0 0 1px #c9daf4, 0 14px 36px rgba(10, 27, 61, 0.10);
+  transform: translateY(-4px);
+}
+
+.reveal-enabled [data-reveal],
+.reveal-enabled [data-reveal-card] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 450ms ease-out, transform 450ms ease-out;
+}
+
+.reveal-enabled [data-reveal-card] {
+  transition: opacity 450ms ease-out, transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal-enabled [data-reveal].is-visible,
+.reveal-enabled [data-reveal-card].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-enabled [data-reveal-card].is-visible:hover {
+  box-shadow: 0 0 0 1px #c9daf4, 0 14px 36px rgba(10, 27, 61, 0.10);
+  transform: translateY(-4px);
+}
+
+@media (max-width: 640px) {
+  .brand-serif { letter-spacing: 0; }
+}
+
+.hero-title { letter-spacing: normal; }
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal-enabled [data-reveal],
+  .reveal-enabled [data-reveal-card] {
+    opacity: 1;
+    transform: none;
+  }
+}
