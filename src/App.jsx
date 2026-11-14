@@ -294,7 +294,7 @@ function PortfolioShowcase({ variant = 'home' }) {
     <section
       id={isSubpage ? undefined : 'portfolios'}
       data-reveal={isSubpage ? undefined : ''}
-      className={`${isSubpage ? 'flex min-h-[calc(100vh-80px)] items-center' : 'py-[72px] xl:py-[110px]'} bg-mist px-4 sm:px-6`}
+      className={`${isSubpage ? 'flex min-h-[calc(100vh-80px)] items-center' : 'py-[60px] xl:py-[84px]'} bg-mist px-4 sm:px-6`}
     >
       <div className="mx-auto grid w-full max-w-[1200px] items-center gap-8 xl:grid-cols-[460px_minmax(0,1fr)] xl:gap-[clamp(24px,6.94vw,100px)]">
         <div className="xl:max-w-[460px]">
@@ -586,7 +586,7 @@ function SiteLayout() {
 
 function PyramidSection() {
   return (
-    <section data-reveal className="bg-white px-4 pt-[110px] pb-[107px] sm:px-6">
+    <section data-reveal className="bg-white px-4 pt-[84px] pb-[80px] sm:px-6">
       <div className="mx-auto max-w-[1188px]">
         <header className="text-center">
           <span className="inline-flex h-8 items-center rounded-full bg-gold-tint px-[14px] text-[13px] font-semibold text-gold-text">How we invest</span>
@@ -614,7 +614,7 @@ function PyramidSection() {
 
 function AllWeatherBuildSection() {
   return (
-    <section data-reveal className="bg-white px-4 py-[72px] sm:px-6 xl:py-[110px]">
+    <section data-reveal className="bg-white px-4 py-[60px] sm:px-6 xl:py-[84px]">
       <div className="mx-auto max-w-[1180px]">
         <SectionHeader label="How it is built" title="Four layers, one discipline." />
         <p className="mt-4 text-center text-[17px] leading-[1.6] text-[#475775]">Layer sizes are set by our investment committee and reviewed every quarter.</p>
@@ -639,7 +639,7 @@ function AllWeatherBuildSection() {
 
 function AllWeatherAudienceSection() {
   return (
-    <section data-reveal className="bg-mist px-4 py-[72px] sm:px-6 xl:py-[110px]">
+    <section data-reveal className="bg-mist px-4 py-[60px] sm:px-6 xl:py-[84px]">
       <div className="mx-auto max-w-[1188px]">
         <SectionHeader label="Who it suits" title="Built for long term wealth." />
         <AudienceCards cards={allWeatherAudience} />
@@ -677,9 +677,20 @@ function HomePage() {
             <div className="mx-auto w-[calc(100%-32px)] max-w-[1280px] py-2 xl:pb-12 xl:pt-16">
               <div className="grid items-start gap-2 xl:grid-cols-[minmax(0,640px)_minmax(0,560px)] xl:gap-10">
                 <div>
-                  <div className="inline-flex rounded-full bg-[#fff4d6] px-[14px] py-[6px] text-[13px] font-medium leading-[18px] text-[#7a5410]">Managed ETF portfolios</div>
-                  <h1 className="hero-title brand-serif mt-1 max-w-[640px] text-[30px] leading-[1.05] tracking-normal text-navy xl:mt-5 xl:text-[58px] xl:leading-[1.15]">Your wealth, ready to<br className="hidden xl:block" /> cross the bridge to<br className="hidden xl:block" /> US markets.</h1>
-                  <p className="mt-1 max-w-[520px] text-[16px] leading-[1.55] text-[#475775] xl:mt-6 xl:text-[18px]">Managed portfolios of global businesses, built for the global Indian.</p>
+                  {/* <div className="inline-flex rounded-full bg-[#fff4d6] px-[14px] py-[6px] text-[13px] font-medium leading-[18px] text-[#7a5410]">Managed ETF portfolios</div> */}
+                  <h1 className="hero-title brand-serif mt-1 max-w-[640px] text-[30px] leading-[1.05] tracking-normal text-navy xl:mt-5 xl:text-[58px] xl:leading-[1.15]">Your wealth<br className="hidden xl:block" />Without Borders</h1>
+
+                  <div className="mt-7 flex flex-wrap items-center gap-2 text-[14px] font-medium leading-5 text-[#475775] xl:mt-8">
+                    <span>Multi Assets</span>
+                    <span className="text-[#C9DAF4]">|</span>
+                    <span>Multi Industry</span>
+                    <span className="text-[#C9DAF4]">|</span>
+                    <span>Multi Geography</span>
+                    <span className="text-[#C9DAF4]">|</span>
+                    <span>Multi Currency</span>
+                  </div>
+
+                  <p className="mt-6 max-w-[520px] text-[16px] leading-[1.55] text-[#475775] xl:mt-8 xl:text-[18px]">Managed portfolios of global businesses, built for the global Indian.</p>
 
                   <div className="mt-2 flex flex-wrap items-center gap-4 xl:mt-8">
                     <PrimaryButton size="hero" href="/portfolios/all-weather">Start investing</PrimaryButton>
@@ -703,7 +714,7 @@ function HomePage() {
           </div>
         </section>
 
-        <section data-reveal className="bg-mist px-4 py-[110px] sm:px-6">
+        <section data-reveal className="bg-mist px-4 py-[78px] sm:px-6 xl:py-[88px]">
           <div className="mx-auto max-w-[1188px]">
             <header className="text-center">
               <span className="inline-flex h-8 items-center rounded-full bg-gold-tint px-[14px] text-[13px] font-semibold text-gold-text">Why invest globally</span>
@@ -723,7 +734,7 @@ function HomePage() {
           </div>
         </section>
 
-        <section id="why-us" data-reveal className="bg-white px-4 py-[110px] sm:px-6">
+        <section id="why-us" data-reveal className="bg-white px-4 py-[78px] sm:px-6 xl:py-[88px]">
           <div className="mx-auto max-w-[1200px]">
             <header className="text-center">
               <span className="inline-flex h-8 items-center rounded-full bg-gold-tint px-[14px] text-[13px] font-semibold text-gold-text">Why US markets</span>
@@ -742,7 +753,7 @@ function HomePage() {
           </div>
         </section>
 
-        <section data-reveal className="bg-mist px-4 py-[110px] sm:px-6">
+        <section data-reveal className="bg-mist px-4 py-[78px] sm:px-6 xl:py-[88px]">
           <div className="mx-auto max-w-[1188px]">
             <header className="text-center">
               <span className="inline-flex h-8 items-center rounded-full bg-gold-tint px-[14px] text-[13px] font-semibold text-gold-text">How most Indians invest in the US today</span>
@@ -790,7 +801,7 @@ function HomePage() {
 
         <PortfolioShowcase />
 
-        <section className="bg-[#0A1B3D] px-4 py-[72px] sm:px-6 xl:py-[110px]">
+        <section className="bg-[#0A1B3D] px-4 py-[62px] sm:px-6 xl:py-[82px]">
           <div className="mx-auto max-w-[1256px]">
             <SectionHeader label="Safety" pillClassName="!border-0 !bg-[#1B2B5E] !text-[#F7CD62]" titleClassName="text-white" title="Safety is our cornerstone." />
             <p className="mx-auto mt-4 max-w-[700px] text-center text-[18px] leading-[1.6] text-[#B7C3DB]">All investments are in listed securities, held in your name. You own and control what is in your portfolio.</p>
@@ -809,7 +820,7 @@ function HomePage() {
           </div>
         </section>
 
-        <section data-reveal className="bg-mist px-4 py-[72px] sm:px-6 xl:py-[110px]">
+        <section data-reveal className="bg-mist px-4 py-[62px] sm:px-6 xl:py-[82px]">
           <div className="mx-auto max-w-[1188px]">
             <SectionHeader label="Who it is for" title="Who is BrainTree for?" />
             <AudienceCards cards={audienceCards} minHeight="min-h-[272px]" />
@@ -817,7 +828,7 @@ function HomePage() {
           </div>
         </section>
 
-        <section id="how-it-works" className="bg-white px-4 py-[72px] sm:px-6 xl:py-[110px]">
+        <section id="how-it-works" className="bg-white px-4 py-[62px] sm:px-6 xl:py-[82px]">
           <div className="mx-auto max-w-[1196px]">
             <SectionHeader label="How it works" title="Get started in 3 simple steps." />
             <p className="mx-auto mt-4 max-w-[680px] text-center text-[17px] leading-[1.6] text-[#475775]">Open an account, complete KYC and invest through LRS. Then invest in the whole portfolio with one click.</p>
@@ -837,7 +848,7 @@ function HomePage() {
           </div>
         </section>
 
-        <section id="about" data-reveal className="bg-mist px-4 py-[72px] sm:px-6 xl:py-[104px]">
+        <section id="about" data-reveal className="bg-mist px-4 py-[62px] sm:px-6 xl:py-[78px]">
           <div className="mx-auto max-w-[1200px]">
             <SectionHeader label="Team" title="Our team has worked at" />
             <div className="mt-8 overflow-x-auto">
@@ -859,7 +870,7 @@ function HomePage() {
           </div>
         </section>
 
-        <section id="resources" data-reveal className="bg-white px-4 py-[72px] sm:px-6 xl:py-[110px]">
+        <section id="resources" data-reveal className="bg-white px-4 py-[62px] sm:px-6 xl:py-[82px]">
           <div className="mx-auto max-w-[1232px]">
             <SectionHeader label="Learn" title="Learn before you invest." />
             <p className="mt-4 text-center text-[16px] leading-6 text-[#475775]">Articles, videos and guides, in plain words.</p>
@@ -904,7 +915,7 @@ function HomePage() {
           </div>
         </section>
 
-        <section data-reveal className="bg-mist px-4 py-[72px] sm:px-6 xl:py-[110px]">
+        <section data-reveal className="bg-mist px-4 py-[62px] sm:px-6 xl:py-[82px]">
           <div className="mx-auto max-w-[980px]">
             <SectionHeader label="FAQs" title="What are you still unsure about?" />
             <div className="mx-auto mt-10 max-w-[820px] space-y-[14px] xl:mt-12">
