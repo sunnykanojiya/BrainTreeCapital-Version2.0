@@ -1,67 +1,117 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { BrowserRouter, Link, Outlet, Route, Routes, useLocation } from 'react-router-dom';
 import {
   ArrowLeftRight,
   ArrowRight,
+  ArrowUpRight,
   BadgeDollarSign,
+  BriefcaseBusiness,
   Building2,
+  ChartNoAxesCombined,
   Cpu,
+  FileCheck,
   FileText,
   Globe,
   Globe2,
   GraduationCap,
-  Info,
   KeyRound,
+  Landmark,
+  Laptop,
   Layers,
+  Layers3,
   LineChart,
   Menu,
-  Minus,
+  ChevronDown,
   PenLine,
   PlayCircle,
-  Plus,
   RefreshCw,
   Search,
   ShieldCheck,
-  ShoppingBag,
   Smartphone,
+  TrendingUp,
   Unlock,
-  Users,
+  UserRoundPlus,
+  UsersRound,
+  Wallet,
   X,
 } from 'lucide-react';
 import GlobeHero from './components/globe/GlobeHero';
 import { portfolioSeries } from './content';
 
 const navItems = [
-  { label: 'Portfolios', href: '/portfolios/all-weather' },
-  { label: 'Why U.S.', href: '#why-us' },
+  { label: 'Why Us', href: '#why-us' },
   { label: 'How it works', href: '#how-it-works' },
-  { label: 'Resources', href: '#resources' },
   { label: 'About', href: '#about' },
 ];
 
+const APP_INSTALL_URL = 'https://paasa.com/install-app?utm_source=BrainTreeCapital&utm_medium=Distribution&utm_campaign=referral-by-braintree-capital&utm_content=BRAINWM&utm_term=braintreecapital';
+const AUTH_URL = APP_INSTALL_URL;
+const CALENDLY_URL = 'https://calendly.com/braintree-capital/30min';
+
 const reasons = [
-  { key: 'FX', icon: ArrowLeftRight, title: 'Diversify across currencies and geographies', text: 'Spread your money beyond one country and one currency.' },
-  { key: 'TOP', icon: Globe, title: 'Own global leaders', text: 'Hold a share of the largest businesses in the world.' },
+  { key: 'FX', icon: ArrowLeftRight, title: 'Build a $ corpus for your $ needs', text: 'Child’s education, Travel, Settling abroad, Medical Treatment.' },
+  { key: 'TOP', icon: Globe, title: 'Reduce risk by Diversifying beyond India.', text: 'Put eggs in different baskets.' },
   { key: 'NEXT', icon: Cpu, title: 'Own the technologies of tomorrow', text: 'Be invested where the next big ideas are built.' },
 ];
 
-const whyUsStats = [
-  { value: 'About 45%', desc: 'of world market value is listed in the US', tone: 'blue' },
-  { value: 'About 4%', desc: "is India's share of world market value", tone: 'blue' },
-  { value: '34 vs 79 lakh', desc: 'what 10 lakh became from 2015 to 2025: Nifty 50 against the S&P 500', tone: 'gold' },
-];
-
-const investorCards = [
-  { title: 'Buy a stock you already use', body: 'Pick a company whose product you know, such as Apple.', icon: ShoppingBag },
-  { title: 'Buy an ETF', body: 'Choose a fund because it looks popular or someone recommended it.', icon: Layers },
-  { title: 'Buy an index ETF', body: 'Hold a broad index and hope the market does the work.', icon: LineChart },
+const whatGoesWrong = [
+  'The pick rests on a tip or one small piece of information',
+  'Nothing tells you when to buy - or to sell.',
+  'You accumulate stocks instead of a methodical portfolio.',
+  'Returns end up below what you expected',
 ];
 
 const pyramidLayers = [
-  { name: 'Conviction', desc: 'High growth themes, the technologies of the future', accent: 'blue' },
-  { name: 'Smart Beta', desc: 'Momentum based ETFs', accent: 'blue' },
-  { name: 'Core Equity', desc: 'Owns the broad US market through index ETFs', accent: 'light' },
-  { name: 'Defensive and Income', desc: 'Protects in falls and generates steady returns', accent: 'light' },
+  {
+    key: 'conviction',
+    name: 'Conviction',
+    desc: 'High growth themes, the technologies of the future',
+    icon: TrendingUp,
+    desktopWidth: '56%',
+    desktopCopyWidth: '50%',
+    mobileWidth: '80%',
+    mobileCopyWidth: '50%',
+    colors: { frontStart: '#1743B8', frontEnd: '#2F5FE5', top: '#6788EA', left: '#153990', right: '#102F7E' },
+  },
+  {
+    key: 'smart-beta',
+    name: 'Smart Beta',
+    desc: 'Momentum based ETFs & Stocks',
+    icon: Layers,
+    desktopWidth: '72%',
+    desktopInset: 11.1,
+    desktopCopyWidth: '86%',
+    mobileWidth: '86%',
+    mobileInset: 3.5,
+    mobileCopyWidth: '91%',
+    colors: { frontStart: '#526EC9', frontEnd: '#7C96E8', top: '#A5B7ED', left: '#4961AE', right: '#3D559D' },
+  },
+  {
+    key: 'core-equity',
+    name: 'Core Equity',
+    desc: 'Owns the broad global markets through index ETFs',
+    icon: Globe2,
+    desktopWidth: '88%',
+    desktopInset: 9.1,
+    desktopCopyWidth: '90%',
+    mobileWidth: '93%',
+    mobileInset: 3.8,
+    mobileCopyWidth: '93%',
+    colors: { frontStart: '#AFC3ED', frontEnd: '#D0DCF5', top: '#EFF4FD', left: '#94A9D2', right: '#839AC4' },
+  },
+  {
+    key: 'defensive-income',
+    name: 'Defensive and Income',
+    desc: 'Preserves your capital and generates steady returns',
+    icon: ShieldCheck,
+    desktopWidth: '100%',
+    desktopInset: 6,
+    desktopCopyWidth: '88%',
+    mobileWidth: '100%',
+    mobileInset: 3.5,
+    mobileCopyWidth: '92%',
+    colors: { frontStart: '#DDE6F4', frontEnd: '#F8FAFE', top: '#FFFFFF', left: '#C7D2E4', right: '#B6C5DA' },
+  },
 ];
 
 const allWeatherAudience = [
@@ -71,54 +121,234 @@ const allWeatherAudience = [
 ];
 
 const pyramidChips = [
-  { text: 'Rebalanced every quarter', icon: RefreshCw },
-  { text: 'Layer sizes set by our investment committee', icon: Users },
-  { text: 'Illustrative. Examples shown in portfolio detail.', icon: Info },
+  { text: 'Created Mathematically with Low Correlation', icon: LineChart },
+  { text: 'Rebalanced once a quarter', icon: RefreshCw },
+  { text: 'Aims for Better Risk Adjusted Returns', icon: ShieldCheck },
 ];
 
 const safetyCards = [
-  { title: 'Regulated custody', desc: 'SIPC member custody and an SEC registered broker-dealer, through DriveWealth.', icon: ShieldCheck },
+  { title: 'Compliant with US and Indian regulations.', desc: 'SIPC member custody and an SEC registered broker-dealer, through DriveWealth.', icon: ShieldCheck },
   { title: 'Fully digital KYC', desc: 'Verify online in about a day. No branch visits.', icon: Smartphone },
   { title: 'You own what you hold', desc: 'Securities sit in your name, and you control them.', icon: KeyRound },
-  { title: 'No lock-in, no exit fee', desc: 'Withdraw whenever you choose.', icon: Unlock },
+  { title: 'No lock-in, no exit fee', desc: 'You can Top Up & Withdraw fully or partly anytime.', icon: Unlock },
 ];
 
 const audienceCards = [
-  { label: 'NRI', title: 'NRIs', text: 'Keep your wealth working in global markets, wherever you live.', icon: Globe2 },
-  { label: 'RSU', title: 'CXOs holding RSUs', text: 'Executives in Indian tech companies who want to spread risk beyond one company\'s shares.', icon: BadgeDollarSign },
-  { label: 'BIZ', title: 'Business owners', text: 'Put surplus capital to work outside India, under the RBI\'s rules.', icon: Building2 },
+  { title: 'NRIs', text: 'Keep your wealth working in global markets, wherever you live.', icon: UsersRound },
+  { title: 'CXOs holding RSUs', text: 'Executives in Indian tech companies who want to spread risk beyond one company\'s shares.', icon: Laptop },
+  { title: 'Business owners', text: 'Put surplus capital to work outside India, under the RBI\'s rules.', icon: Building2 },
+  { title: 'Investors in India', text: 'AIF/PMS seeking global returns.', icon: ChartNoAxesCombined },
 ];
 
-const steps = [
-  { number: '1', title: 'Open an account', text: 'Sign up online in a few minutes.' },
-  { number: '2', title: 'Complete KYC', text: 'Verify your identity digitally in about a day. No branch visits and no paperwork.' },
-  { number: '3', title: 'Invest through LRS', text: 'Send money abroad under the RBI\'s LRS, up to US $250,000 per person each year, then invest in the portfolio. Remittance takes 2 to 5 days.' },
+const investorRouteCards = [
+  { title: 'NRIs', text: 'Invest directly from the country where you live.', icon: Globe },
+  { title: 'RSU holders', text: 'Sell RSUs in a planned manner and invest directly.', icon: BriefcaseBusiness },
 ];
 
 const teamMembers = [
-  { name: 'Anurag Bhatnagar', title: 'Title to be confirmed' },
-  { name: 'Varun Verma', title: 'Title to be confirmed' },
-  { name: 'Shashikant Burnwal', title: 'Title to be confirmed' },
-  { name: 'Ian Jason Creado', title: 'Title to be confirmed' },
+  {
+    name: 'Anurag Bhatnagar',
+    role: 'CO-FOUNDER & PORTFOLIO DIRECTOR',
+    credentials: 'CA · 30+ Years Leadership',
+    biography: "Chartered Accountant with over 30 years of CXO-level leadership across banking, investments and insurance. Was part of HDFC Mutual Fund's founding team, led Wealth Management at Citigroup, and managed public portfolios for ULIPs at New York Life. His institutional experience across full market cycles shapes BrainTree Capital's risk-first portfolio architecture. Personally invested in the same strategies he builds for clients.",
+    tags: ['CITIGROUP', 'HDFC AMC', 'NEW YORK LIFE', 'IL&FS A.F. FERGUSON'],
+    image: '/team/anurag.png',
+  },
+  {
+    name: 'Varun Verma',
+    role: 'CO-FOUNDER & TRADER',
+    credentials: 'Co-founder · Trader',
+    biography: 'He built Temporal, a venture-backed research firm developing market mechanisms for interest rate derivatives and perpetual futures. He also leads Erdos, a proprietary trading firm operating in niche liquid markets, generating edge from product design inefficiencies and the structural constraints of market participants.',
+    tags: ['TEMPORAL', 'ERDOS', 'MARKET STRUCTURE'],
+    image: '/team/varun-verma.png',
+  },
+  {
+    name: 'Shashikant Burnwal',
+    role: 'MANAGING PARTNER',
+    credentials: 'IIT Kharagpur · ISB MBA · SEBI-Certified Portfolio Manager',
+    biography: "Leads deep-sector research and portfolio management at BrainTree Capital. Combines fundamental analysis with macro insights to identify high-quality businesses with long-term compounding potential. Builds diversified portfolios with a strong emphasis on quantitative risk management. His SEBI certification and ISB finance background ground the firm's systematic, rules-based investment process.",
+    tags: ['IIT KHARAGPUR', 'ISB MBA FINANCE', 'SEBI CERTIFIED'],
+    image: '/team/shashikant-burnwal.png',
+  },
+  {
+    name: 'Ian Jason Creado',
+    role: 'PARTNER · INVESTOR RELATIONS',
+    credentials: '14+ Years Experience',
+    biography: 'A seasoned client relationship professional with over 14 years of experience spanning B2B sales, business development, and operations. As Partner, Investor Relations at BrainTree Capital, Ian serves as the primary point of contact for investors, ensuring a seamless onboarding experience and a consistently high-touch engagement through every stage of the investment journey.',
+    tags: ['HubCredo', 'CLIENT RELATIONS'],
+    image: '/team/ian-jason-creado.png',
+  },
 ];
 
-const learnCards = [
+const teamAdvisor = {
+  name: 'Himanshu Verma',
+  role: 'BOARD ADVISOR',
+  credentials: 'Board Advisor and founder of ShiftAltCap',
+  biography: "Chartered Accountant and former Senior Vice President at Cognizant, where he led the Digital business unit serving clients including Alphabet, Microsoft, Meta, Apple and Stripe. Now serves on the boards of several companies while building ShiftAlt Capital. A keen investor himself, he brings a technology operator's lens to wealth building — and is passionate about helping fellow HNIs navigate the path to US market exposure.",
+  tags: [],
+  image: '/team/himanshu-verma.png',
+};
+
+const _learnCards = [
   { type: 'Article', title: 'LRS for global investing', href: '#', coverColor: '#EEF4FA' },
   { type: 'Article', title: 'TCS explained', href: '#', coverColor: '#FFF4D6' },
   { type: 'Article', title: 'Diversifying your RSUs', href: '#', coverColor: '#E1EAFC' },
 ];
 
-const learnTypeIcons = { Article: FileText, Video: PlayCircle, Blog: PenLine };
+const _learnTypeIcons = { Article: FileText, Video: PlayCircle, Blog: PenLine };
 
-const faqs = [
-  { q: 'How is BrainTree different?', a: '' },
-  { q: 'Is sending money abroad legal?', a: 'Yes. The RBI specifically allows it under its Liberalised Remittance Scheme.' },
-  { q: 'How will my US gains be taxed?', a: '' },
-  { q: 'Can I withdraw any time?', a: '' },
-  { q: 'Can NRIs use BrainTree?', a: '' },
-  { q: 'I hold RSUs. Should I diversify?', a: '' },
-  { q: 'Who holds my securities?', a: '' },
-  { q: 'What are the minimum and top-up amounts?', a: '' },
+const faqCategories = [
+  {
+    id: 'why-invest-globally',
+    label: 'WHY INVEST GLOBALLY',
+    questions: [
+      {
+        question: 'Why should I invest in portfolios of global businesses listed in the USA?',
+        answer: {
+          blocks: [
+            { type: 'paragraph', text: 'There are a number of reasons, but here are the top five:' },
+            {
+              type: 'numbered',
+              items: [
+                { title: 'Largest & Most Innovative Market:', text: "The U.S. stock market is 6x bigger than India's, home to the most innovative businesses in the world — offering unmatched growth potential." },
+                { title: 'Invest in Brands You Already Trust:', text: 'Tech businesses that dominate globally — Google, Microsoft, Meta, AWS, Apple and many more — are all listed and accessible.' },
+                { title: 'Innovation-Driven Returns:', text: "Most good US businesses represent tomorrow's economy. The returns from innovation are structurally superior to returns on today's businesses." },
+                { title: 'Make the US Dollar Work for You:', text: 'A rising US dollar adds a structural currency tailwind to your returns. The rupee has depreciated against the dollar over every significant time horizon.' },
+                { title: 'Insurance:', text: 'Your money and securities are insured up to US $500,000 (approx. ₹4.30 crore) under SIPC.' },
+              ],
+            },
+          ],
+        },
+      },
+      {
+        question: "What are the specific benefits of investing in ShiftAltCap's global portfolios?",
+        answer: {
+          blocks: [
+            { type: 'paragraph', text: 'By choosing to invest in either or both our portfolios, you gain 7 distinct benefits:' },
+            {
+              type: 'numbered',
+              items: [
+                { title: 'Full Control:', text: 'At all times, you retain direct control over your money and securities.' },
+                { title: 'Zero Lock-in:', text: 'Withdraw anytime with full liquidity — no exit fee, no lock-in period.' },
+                { title: 'Easy to Operate:', text: 'Single-click investing and withdrawal through the Stockal dashboard.' },
+                { title: 'Currency Advantage:', text: 'Make the US Dollar work for you as a structural hedge.' },
+                { title: 'No-Hassle Rebalancing:', text: 'Quarterly rebalancing happens automatically — you are notified, nothing is required from you.' },
+                { title: 'Fully Compliant:', text: 'With regulations of both India (RBI/LRS) and the USA (SEC/FINRA).' },
+                { title: 'Insured:', text: 'Your money and securities are protected under SIPC up to US $500,000.' },
+              ],
+            },
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: 'compliance-safety',
+    label: 'COMPLIANCE & SAFETY',
+    questions: [
+      {
+        question: 'Are these portfolios regulated and compliant with Indian and US laws?',
+        answer: {
+          blocks: [
+            { type: 'paragraph', text: 'Yes. The offering is compliant with both Indian and US regulations:' },
+            {
+              type: 'numbered',
+              items: [
+                { title: 'India — RBI Liberalised Remittance Scheme (LRS):', text: 'The RBI explicitly allows resident Indian citizens to invest in listed securities on global exchanges. Current annual limit: up to US $250,000 (approx. ₹2.15 crore) per person per year.' },
+                { title: 'USA — SEC & FINRA Registered:', text: 'All holdings in both portfolios are listed on the New York Stock Exchange. Our broker and custodian is DriveWealth, registered with the Securities Exchange Commission (SEC) and governed by FINRA.' },
+              ],
+            },
+          ],
+          highlight: 'Your money account is held with JP Morgan Chase Bank — governed by the US Federal Reserve.',
+        },
+      },
+      {
+        question: 'How safe is the platform?',
+        answer: {
+          blocks: [
+            { type: 'paragraph', text: 'The platform is secured with 256-bit encryption — a higher standard than most banking platforms. The platform is owned by Stockal (Borderless Softech Pvt Ltd), and ShiftAltCap has partnered with Stockal to execute transactions through DriveWealth, a broker registered with the SEC in the USA.' },
+            { type: 'paragraph', text: 'Think of Stockal as a regulated digital bridge that enables citizens of one country to access and invest in markets of another in a fully compliant manner.' },
+          ],
+          highlight: '256-bit encryption · DriveWealth (SEC-registered) · SIPC insured up to US $500,000 · JP Morgan Chase custodian',
+        },
+      },
+    ],
+  },
+  {
+    id: 'investment-process',
+    label: 'INVESTMENT & PROCESS',
+    questions: [
+      {
+        question: 'What is the minimum and maximum investment size?',
+        answer: {
+          blocks: [
+            { type: 'paragraph', text: 'The minimum investment is US $10,000 per portfolio strategy. This ensures your allocation is large enough to be meaningfully diversified across the positions that make up each portfolio.' },
+            { type: 'paragraph', text: "The maximum investment is US $250,000 (approx. ₹2.15 crore) per person per year — this is the RBI's Liberalised Remittance Scheme (LRS) annual limit for resident Indian investors. GCC investors may have different limits based on their local regulations." },
+          ],
+          highlight: 'Minimum: US $10,000 per strategy · Maximum: US $250,000 per year (RBI LRS limit)',
+        },
+      },
+      {
+        question: 'After opening my account, how do I transfer money to my US account?',
+        answer: {
+          blocks: [
+            { type: 'paragraph', text: 'The RBI mandates that all international transfers from India be made via Form A2 — a standard form that all banks follow.' },
+            {
+              type: 'bullets',
+              items: [
+                'HDFC Bank',
+                'ICICI Bank',
+                'Kotak Mahindra Bank',
+                'IndusInd Bank',
+                'IDFC First Bank',
+                'Yes Bank',
+              ],
+            },
+            { type: 'paragraph', text: 'If you bank elsewhere, you will need to visit your branch and complete the Form A2 process on paper. In either case, funds are credited to your US-based JP Morgan Chase account within 1–2 working days.' },
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: 'tax-reporting',
+    label: 'TAX & REPORTING',
+    questions: [
+      {
+        question: 'How will I be taxed on my US portfolio investments?',
+        answer: {
+          blocks: [
+            { type: 'paragraph', text: 'We recommend consulting your tax advisor for your specific situation, but here is a general overview:' },
+            {
+              type: 'numbered',
+              items: [
+                { title: 'Residential Status Matters:', text: 'Taxation differs for Resident Indians and Non-Resident Indians (NRIs).' },
+                { title: 'DTAA Protection:', text: 'India and the USA have signed a Double Tax Avoidance Agreement (DTAA) — ensuring you are taxed in only one country, not both.' },
+                {
+                  title: 'Two Sources of Taxable Income:',
+                  children: [
+                    { title: 'Capital Gains (when you sell):', text: 'Not taxed in the USA. Taxed in India as per Indian capital gains laws.' },
+                    { title: 'Dividends / Interest:', text: 'Subject to 10–25% tax deducted at source (TDS) in the USA. This can be claimed as an offset against your regular tax liability in India when you file your ITR.' },
+                  ],
+                },
+              ],
+            },
+          ],
+          highlight: 'Capital gains: taxed in India only. Dividends: TDS in USA, claimable as credit in India via DTAA.',
+        },
+      },
+      {
+        question: 'How do I claim the tax deduction benefit? What documents will I receive?',
+        answer: {
+          blocks: [
+            { type: 'paragraph', text: 'When you open your account, you pay a one-time fee of US $5 to obtain a W-8BEN form. This is a form mandated by the IRS (Internal Revenue Service) of the USA to identify non-US investors — it establishes your foreign status and entitles you to the reduced withholding rates under the India–USA DTAA.' },
+            { type: 'paragraph', text: 'When filing your Indian tax return, you (or your CA) will need this W-8BEN along with the annual account statement from DriveWealth showing dividends received and tax withheld in the USA. You can claim the US tax withheld as a foreign tax credit offset in your Indian ITR.' },
+          ],
+          highlight: 'One-time: US $5 for W-8BEN · Annual: DriveWealth account statement · Claim TDS offset via Form 67 in your Indian ITR',
+        },
+      },
+    ],
+  },
 ];
 
 function SectionHeader({ label, title, centered = true, className = '', pillClassName = '', titleClassName = '' }) {
@@ -130,11 +360,65 @@ function SectionHeader({ label, title, centered = true, className = '', pillClas
   );
 }
 
-function BrandLogo({ className = '' }) {
-  return <Link to="/" className={`whitespace-nowrap text-[20px] font-semibold tracking-normal text-navy ${className}`}>BrainTree Capital</Link>;
+function TeamMemberCard({ member, index, horizontal = false }) {
+  const initials = member.name.split(' ').map((word) => word[0]).slice(0, 2).join('');
+  const avatar = member.image ? (
+    <img src={member.image} alt={member.name} className="h-16 w-16 shrink-0 rounded-[12px] object-cover sm:h-[72px] sm:w-[72px]" />
+  ) : (
+    <div aria-hidden="true" className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-[12px] bg-[#E4EDFC] text-[20px] font-semibold text-navy sm:h-[72px] sm:w-[72px] ${horizontal ? 'sm:h-[70px] sm:w-[70px]' : ''}`}>
+      {initials}
+    </div>
+  );
+
+  if (horizontal) {
+    return (
+      <article data-reveal-card style={{ '--reveal-delay': `${index * 80}ms` }} className="grid gap-5 rounded-[18px] border border-[#d7e3f4] bg-white p-4 sm:grid-cols-[minmax(0,0.78fr)_1fr] sm:items-center sm:gap-6 sm:p-5">
+        <div className="flex items-center gap-4 sm:border-r sm:border-[#d7e3f4] sm:pr-6">
+          {avatar}
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold leading-4 tracking-[0.08em] text-[#B2760A] sm:text-[11px]">{member.role}</p>
+            <h3 className="brand-serif mt-1 text-[18px] leading-[1.3] !tracking-normal text-navy sm:text-[20px]">{member.name}</h3>
+            <p className="mt-1 text-[12px] leading-[1.5] text-[#475775]">{member.credentials}</p>
+          </div>
+        </div>
+        <p className="text-[13px] leading-[1.55] text-[#263858] sm:text-[14px]">{member.biography}</p>
+      </article>
+    );
+  }
+
+  return (
+    <article data-reveal-card style={{ '--reveal-delay': `${index * 80}ms` }} className="flex h-full flex-col rounded-[18px] border border-[#d7e3f4] bg-white p-4 sm:p-5">
+      <div className="flex items-center gap-3">
+        {avatar}
+        <div className="min-w-0">
+          <p className="text-[10px] font-bold leading-4 tracking-[0.07em] text-[#B2760A] sm:text-[11px]">{member.role}</p>
+          <h3 className="brand-serif mt-1 text-[17px] leading-[1.3] !tracking-normal text-navy sm:text-[19px]">{member.name}</h3>
+          <p className="mt-1 text-[11px] leading-[1.4] text-[#475775] sm:text-[12px]">{member.credentials}</p>
+        </div>
+      </div>
+      <p className="mt-3 text-[12px] leading-[1.55] text-[#263858] sm:text-[13px]">{member.biography}</p>
+      <div className="mt-auto flex flex-wrap gap-1.5 pt-3">
+        {member.tags.map((tag) => (
+          <span key={tag} className="inline-flex rounded-full border border-[#E6C47B] px-2 py-[3px] text-[9px] font-semibold leading-3 text-[#9A6508] sm:text-[10px]">{tag}</span>
+        ))}
+      </div>
+    </article>
+  );
 }
 
-function PrimaryButton({ children, href = '#', className = '', size = 'default' }) {
+function BrandLogo({ className = '', imageClassName = '' }) {
+  return (
+    <Link to="/" aria-label="BrainTree Capital home" className={`inline-flex shrink-0 ${className}`}>
+      <img
+        src="/braintree-capital-wordmark.png"
+        alt=""
+        className={`h-[70px] w-[127px] object-contain ${imageClassName}`}
+      />
+    </Link>
+  );
+}
+
+function PrimaryButton({ children, href = '#', className = '', size = 'default', target, rel }) {
   const styles = size === 'hero'
     ? 'h-[52px] rounded-xl bg-blue px-7 text-[16px] font-semibold text-white shadow-none'
     : size === 'showcase'
@@ -145,20 +429,20 @@ function PrimaryButton({ children, href = '#', className = '', size = 'default' 
       ? 'h-[62px] rounded-[14px] bg-white px-[34px] text-[16px] font-semibold !text-navy shadow-none'
     : 'rounded-xl bg-blue px-7 py-4 text-[18px] font-semibold text-white shadow-lg shadow-blue/20';
   return (
-    <a href={href} className={`primary-button inline-flex items-center justify-center ${styles} ${className}`}>
+    <a href={href} target={target} rel={rel} className={`primary-button inline-flex items-center justify-center ${styles} ${className}`}>
       {children}
     </a>
   );
 }
 
-function SecondaryButton({ children, href = '#', className = '', size = 'default' }) {
+function SecondaryButton({ children, href = '#', className = '', size = 'default', target, rel }) {
   const styles = size === 'hero'
     ? 'h-[52px] rounded-xl border border-[#dce5f1] bg-white px-7 text-[16px] font-semibold text-navy hover:bg-white'
     : size === 'resources'
       ? 'h-[52px] rounded-xl border border-[#C9DAF4] bg-white px-7 text-[16px] font-semibold text-navy hover:bg-white'
     : 'rounded-xl border border-[#dfe8f4] bg-transparent px-7 py-4 text-[18px] font-semibold text-navy hover:bg-white';
   return (
-    <a href={href} className={`secondary-button inline-flex items-center justify-center ${styles} ${className}`}>
+    <a href={href} target={target} rel={rel} className={`secondary-button inline-flex items-center justify-center ${styles} ${className}`}>
       {children}
     </a>
   );
@@ -187,6 +471,48 @@ function useInView(immediate = false) {
     return () => {
       cancelAnimationFrame(frame);
       observer.disconnect();
+    };
+  }, [visible]);
+
+  return [ref, visible];
+}
+
+function useScrollTriggeredInView() {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(() => (
+    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  ));
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element || visible) return undefined;
+
+    let observer;
+    const handleScroll = () => {
+      if (!('IntersectionObserver' in window)) {
+        const bounds = element.getBoundingClientRect();
+        const visibleHeight = Math.max(0, Math.min(bounds.bottom, window.innerHeight) - Math.max(bounds.top, 0));
+        if (visibleHeight / bounds.height >= 0.25) {
+          setVisible(true);
+          window.removeEventListener('scroll', handleScroll);
+        }
+        return;
+      }
+
+      window.removeEventListener('scroll', handleScroll);
+      observer = new IntersectionObserver(([entry]) => {
+        if (entry.intersectionRatio >= 0.25) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      }, { threshold: 0.25 });
+      observer.observe(element);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      observer?.disconnect();
     };
   }, [visible]);
 
@@ -231,7 +557,7 @@ function PortfolioPhone({ animateImmediately = false }) {
         </div>
         <div className="mt-[4.667cqw] flex items-center gap-[2.667cqw] text-left text-[5.333cqw] font-semibold leading-5 text-navy">
           <span className="h-[6.667cqw] w-[6.667cqw] shrink-0 rounded-full bg-blue" />
-          <span>All Weather portfolio</span>
+          <span>Your portfolio</span>
         </div>
         <div className="mt-[4cqw] text-[12cqw] font-bold leading-[1.1] tracking-normal text-navy">
           ${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -310,7 +636,10 @@ function PortfolioShowcase({ variant = 'home' }) {
           {isSubpage ? (
             <h1 className="brand-serif mt-4 text-[36px] leading-[1.25] tracking-normal text-navy sm:text-[48px]">All Weather<br />Portfolio</h1>
           ) : (
-            <h2 className="brand-serif mt-4 text-[36px] leading-[1.2] !tracking-normal text-navy md:text-[48px]">See every layer at<br className="hidden md:block" /> work.</h2>
+            <h2 className="brand-serif mt-4 text-[36px] leading-[1.2] !tracking-normal text-navy md:text-[48px] xl:w-max">
+              <span className="block whitespace-nowrap">Explore Our</span>
+              <span className="block min-[380px]:whitespace-nowrap">Curated Portfolios.</span>
+            </h2>
           )}
           <p className="mt-5 max-w-[460px] text-[18px] leading-[1.6] text-[#475775]">
             {isSubpage
@@ -337,45 +666,510 @@ function PortfolioShowcase({ variant = 'home' }) {
   );
 }
 
-function PyramidLayersView() {
-  const widths = ['max-w-[420px]', 'max-w-[500px]', 'max-w-[680px]', 'max-w-[860px]'];
-  const colors = ['bg-blue text-white', 'bg-[#6F8DF0] text-white', 'bg-[#B5C7F6] text-navy', 'bg-[#E1EAFC] text-navy'];
+function GlobalPortfoliosSection() {
+  const portfolios = [
+    {
+      title: 'BrainTree WealthBuilder',
+      description: 'A global UCITS portfolio built on the Layered Pyramid approach.',
+      icon: Layers3,
+      iconClass: 'bg-[#EAF0FF] text-blue',
+    },
+    {
+      title: 'BrainTree IncomeBuilder',
+      description: 'With Systematic Withdrawal Plan.',
+      icon: Wallet,
+      iconClass: 'bg-[#FFF5DE] text-[#A97912]',
+    },
+  ];
+
   return (
-    <div className="pyramid-layers mx-auto mt-10 w-full max-w-[860px] space-y-2.5 xl:mt-14">
-      {pyramidLayers.map((layer, idx) => (
-        <div
-          key={layer.name}
-          tabIndex={0}
-          className={`pyramid-layer mx-auto flex h-[95px] w-full items-center justify-center rounded-2xl text-center ${widths[idx]} ${colors[idx]}`}
-        >
-          <div>
-            <div className="text-[20px] font-semibold leading-6">{layer.name}</div>
-            <div className={`mt-1 text-[14px] leading-5 ${idx < 2 ? 'text-white' : 'text-[#0A1B3D]'}`}>{layer.desc}</div>
-          </div>
+    <section id="global-portfolios" data-reveal className="bg-mist px-4 pb-[64px] pt-[60px] sm:px-6 lg:pt-[92px] xl:pb-[84px]">
+      <div className="mx-auto max-w-[1056px]">
+        <div className="mx-auto flex flex-col items-center text-center">
+          <span className="brand-pill !h-[44px] !px-6 !text-[18px] !font-medium !text-navy">Our portfolios</span>
+          <h2 className="brand-serif mt-4 text-[44px] leading-[1.15] !tracking-normal text-navy md:text-[64px]">Our portfolios</h2>
+          <span aria-hidden="true" className="mt-5 h-1 w-[72px] rounded-full bg-[#F2C65B]" />
         </div>
+        <div className="mt-9 grid auto-rows-fr items-stretch gap-5 md:grid-cols-2">
+          {portfolios.map(({ title, description, icon: Icon, iconClass }) => (
+            <article key={title} className="min-h-[286px] rounded-[26px] border border-[#D8E3F5] bg-white p-5 shadow-[0_8px_24px_rgba(16,32,68,0.06)] sm:p-6 lg:p-7">
+              <div className="grid h-full grid-cols-[minmax(0,1fr)_1px_18px_1px_84px] items-center gap-x-1 sm:grid-cols-[minmax(0,1fr)_1px_20px_1px_80px] sm:gap-x-1.5 md:grid-cols-[minmax(0,1fr)_1px_22px_1px_84px] lg:grid-cols-[minmax(0,1fr)_1px_28px_1px_92px] lg:gap-x-2.5">
+                <div className="relative z-10 flex h-full min-w-0 flex-col">
+                  <span aria-hidden="true" className={`inline-flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-full ${iconClass}`}>
+                    <Icon size={22} strokeWidth={1.9} />
+                  </span>
+                  <h3 className="brand-serif mt-4 text-[24px] leading-[1.3] !tracking-normal text-navy">{title}</h3>
+                  <p className="mt-2 text-[14px] leading-[1.55] text-[#475775] sm:text-[15px] md:text-[16px]">{description}</p>
+                  <a
+                    href={CALENDLY_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-auto inline-flex w-fit items-center gap-1.5 pt-5 text-[15px] font-semibold text-blue transition-colors hover:text-[#1B44C8] sm:text-[16px]"
+                  >
+                    Book a consultation <ArrowUpRight aria-hidden="true" size={16} strokeWidth={2} />
+                  </a>
+                </div>
+                <span aria-hidden="true" className="h-[108px] w-px self-center bg-[#E4ECF6] sm:h-[124px] lg:h-[128px]" />
+                <span className="text-center text-[20px] font-bold leading-none text-navy [writing-mode:vertical-rl] rotate-180 sm:text-[22px] md:text-[24px] lg:text-[26px]">Multi</span>
+                <span aria-hidden="true" className="h-[108px] w-px self-center bg-[#E4ECF6] sm:h-[124px] lg:h-[128px]" />
+                <div className="self-center text-[13px] leading-[25px] text-[#475775] sm:text-[14px] sm:leading-[27px] lg:text-[15px]">
+                  <span className="block">Asset.</span>
+                  <span className="block">Geographic.</span>
+                  <span className="block">Currency.</span>
+                  <span className="block">Industry.</span>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PyramidDirectionArrow({ label, direction, visible }) {
+  const isUpward = direction === 'up';
+  const description = isUpward
+    ? `${label} increases towards Conviction`
+    : 'Portfolio allocation increases towards Defensive and Income';
+  const path = isUpward
+    ? 'M5 398V12 M1.5 18L5 12L8.5 18'
+    : 'M5 12V398 M1.5 392L5 398L8.5 392';
+
+  return (
+    <div className={`pyramid-direction-arrow flex min-w-0 items-stretch justify-center gap-0.5 ${visible ? 'is-visible' : ''}`}>
+      <span aria-hidden="true" className="self-center text-[10px] font-semibold tracking-[0.12em] text-[#526FAE] [writing-mode:vertical-rl] rotate-180">
+        {label}
+      </span>
+      <svg
+        role="img"
+        aria-label={description}
+        className="h-full w-[8px] shrink-0 overflow-visible text-[#6F8DF0]"
+        viewBox="0 0 10 410"
+        preserveAspectRatio="none"
+        fill="none"
+      >
+        <path d={path} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+      </svg>
+    </div>
+  );
+}
+
+function PyramidLayersView() {
+  const [layersRef, layersVisible] = useScrollTriggeredInView();
+  const svgPrefix = useId().replace(/[^a-zA-Z0-9_-]/g, '');
+
+  return (
+    <div ref={layersRef} className="pyramid-display mx-auto mt-10 grid w-full max-w-[1080px] grid-cols-[28px_minmax(0,1fr)_28px] items-stretch gap-1 sm:grid-cols-[48px_minmax(0,1fr)_48px] sm:gap-2 xl:mt-14 xl:grid-cols-[68px_minmax(0,1fr)_68px] xl:gap-4">
+      <div role="group" aria-label="Potential return increases towards the top" className="grid grid-cols-1 items-stretch">
+        <PyramidDirectionArrow label="RETURN" direction="up" visible={layersVisible} />
+      </div>
+      <div className={`pyramid-assembly mx-auto ${layersVisible ? 'is-visible' : ''}`}>
+        {pyramidLayers.map((layer, idx) => {
+          const Icon = layer.icon;
+          const gradientId = `${svgPrefix}-${layer.key}-front`;
+          const delay = `${(pyramidLayers.length - idx - 1) * 200}ms`;
+          const geometryVariants = layer.key === 'conviction'
+            ? [{ key: 'desktop' }, { key: 'mobile' }]
+            : [
+              { key: 'desktop', inset: layer.desktopInset },
+              { key: 'mobile', inset: layer.mobileInset },
+            ];
+
+          return (
+            <div
+              key={layer.key}
+              className={`pyramid-segment pyramid-segment--${layer.key}`}
+              style={{
+                '--segment-width': layer.desktopWidth,
+                '--segment-inset': `${layer.desktopInset ?? 0}%`,
+                '--segment-copy-width': layer.desktopCopyWidth,
+                '--mobile-segment-width': layer.mobileWidth,
+                '--mobile-segment-inset': `${layer.mobileInset ?? 0}%`,
+                '--mobile-segment-copy-width': layer.mobileCopyWidth,
+                '--layer-delay': delay,
+                '--entry-rotation': idx === 1 ? '5deg' : '2deg',
+              }}
+            >
+              <svg className="pyramid-segment-art" viewBox="0 0 1100 140" preserveAspectRatio="none" aria-hidden="true">
+                <defs>
+                  <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor={layer.colors.frontStart} />
+                    <stop offset="100%" stopColor={layer.colors.frontEnd} />
+                  </linearGradient>
+                </defs>
+                {geometryVariants.map(({ key, inset }) => {
+                  const topLeft = 50 + (inset ?? 0) * 10;
+                  const topRight = 1050 - (inset ?? 0) * 10;
+                  return (
+                    <g key={key} className={`pyramid-geometry pyramid-geometry--${key}`}>
+                      {layer.key === 'conviction' ? (
+                        <>
+                          <polygon points="550,24 522,4 10,118 50,136" fill={layer.colors.left} />
+                          <polygon points="550,24 578,4 1090,118 1050,136" fill={layer.colors.right} />
+                          <polygon points="550,24 578,4 522,4" fill={layer.colors.top} />
+                          <polygon points="550,24 1050,136 50,136" fill={`url(#${gradientId})`} stroke="#FFFFFF" strokeOpacity="0.48" strokeWidth="1.5" />
+                          <path className="pyramid-edge-highlight" d="M550 24L50 136M550 24L1050 136" pathLength="1" />
+                        </>
+                      ) : (
+                        <>
+                          <polygon points={`${topLeft},24 ${topLeft - 40},4 10,118 50,136`} fill={layer.colors.left} />
+                          <polygon points={`${topRight},24 ${topRight + 40},4 1090,118 1050,136`} fill={layer.colors.right} />
+                          <polygon points={`${topLeft},24 ${topRight},24 ${topRight + 40},4 ${topLeft - 40},4`} fill={layer.colors.top} />
+                          <polygon points={`${topLeft},24 ${topRight},24 1050,136 50,136`} fill={`url(#${gradientId})`} stroke="#FFFFFF" strokeOpacity="0.48" strokeWidth="1.5" />
+                          <path className="pyramid-edge-highlight" d={`M${topLeft} 24L50 136M${topRight} 24L1050 136`} pathLength="1" />
+                        </>
+                      )}
+                    </g>
+                  );
+                })}
+              </svg>
+              <div className="pyramid-segment-sweep" aria-hidden="true" />
+              <div className="pyramid-segment-copy">
+                <div className="pyramid-segment-content">
+                  <Icon aria-hidden="true" className="pyramid-segment-icon" strokeWidth={1.8} />
+                  <div className="pyramid-segment-text">
+                    <h3>{layer.name}</h3>
+                    <p>{layer.desc}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+        <span className="pyramid-apex-glow" aria-hidden="true" />
+        <span className="pyramid-base-glow" aria-hidden="true" />
+      </div>
+      <div className="flex items-stretch justify-center">
+        <PyramidDirectionArrow label="ALLOCATION %" direction="down" visible={layersVisible} />
+      </div>
+    </div>
+  );
+}
+
+function AudienceCards({ cards }) {
+  return (
+    <div className="mx-auto mt-10 grid auto-rows-fr max-w-[1840px] items-stretch gap-6 md:grid-cols-2 xl:mt-14 xl:grid-cols-4">
+      {cards.map((card, index) => (
+        <article
+          key={card.title}
+          data-reveal-card
+          style={{ '--reveal-delay': `${index * 80}ms` }}
+          className="flex min-h-[300px] flex-col rounded-[28px] border border-[#D6E4F6] bg-white p-7 shadow-[0_8px_24px_rgba(16,32,68,0.04)] sm:p-8"
+        >
+          <div role="img" aria-label={card.title} className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gold-tint text-gold-text">
+            <card.icon aria-hidden="true" size={24} strokeWidth={1.75} />
+          </div>
+          <h3 className="brand-serif mt-5 min-h-[68px] text-[24px] leading-[1.3] !tracking-normal text-navy xl:text-[26px]">{card.title}</h3>
+          <p className="mt-3 text-[16px] leading-[26px] text-[#475775]">{card.text}</p>
+        </article>
       ))}
     </div>
   );
 }
 
-function AudienceCards({ cards, minHeight = 'min-h-[280px]' }) {
+function JourneyConnector({ className, delay, active, reducedMotion }) {
+  const renderConnector = (direction) => {
+    const horizontal = direction === 'horizontal';
+    const line = horizontal ? 'M3 10H37' : 'M10 3V37';
+    const arrow = horizontal ? 'M30 4L37 10L30 16' : 'M4 30L10 37L16 30';
+    const motionPath = horizontal ? 'M3 10H37' : 'M10 3V37';
+    return (
+      <svg
+        key={direction}
+        aria-hidden="true"
+        className={`journey-link-svg journey-link-${direction}`}
+        viewBox={horizontal ? '0 0 40 20' : '0 0 20 40'}
+        preserveAspectRatio="none"
+      >
+        <path className="journey-link-track" d={line} />
+        <path className="journey-link-progress" d={line} pathLength="1" />
+        <path className="journey-link-arrow" d={arrow} />
+        <circle className="journey-link-particle" cx="0" cy="0" r="3">
+          {active && !reducedMotion && (
+            <animateMotion
+              begin={`${delay}ms`}
+              dur="520ms"
+              path={motionPath}
+              fill="freeze"
+            />
+          )}
+        </circle>
+      </svg>
+    );
+  };
+
   return (
-    <div className="mx-auto mt-10 grid max-w-[1188px] gap-6 md:grid-cols-2 xl:mt-14 xl:grid-cols-3">
-      {cards.map((card, index) => (
-        <article
-          key={card.label}
-          data-reveal-card
-          style={{ '--reveal-delay': `${index * 80}ms` }}
-          className={`${minHeight} rounded-[28px] bg-white p-8`}
-        >
-          <div role="img" aria-label={card.label} className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gold-tint text-gold-text">
-            <card.icon aria-hidden="true" size={24} strokeWidth={1.75} />
-          </div>
-          <h3 className="brand-serif mt-5 text-[24px] leading-[1.3] !tracking-normal text-navy xl:text-[26px]">{card.title}</h3>
-          <p className="mt-3 text-[16px] leading-[26px] text-[#475775]">{card.text}</p>
-        </article>
-      ))}
+    <div
+      aria-hidden="true"
+      className={`journey-link ${className}${active ? ' is-active' : ''}`}
+      style={{ '--journey-delay': `${delay}ms` }}
+    >
+      {renderConnector('horizontal')}
+      {renderConnector('vertical')}
     </div>
+  );
+}
+
+function JourneyRouteBranch({ active, reducedMotion }) {
+  const delay = 1780;
+  return (
+    <>
+      <svg
+        aria-hidden="true"
+        className={`journey-route-branch journey-route-branch-desktop${active ? ' is-active' : ''}`}
+        viewBox="0 0 1000 64"
+        preserveAspectRatio="none"
+        style={{ '--journey-delay': `${delay}ms` }}
+      >
+        <path className="journey-branch-track" d="M0 48H305V60" />
+        <path className="journey-branch-track journey-branch-track-gold" d="M305 48H820V60" />
+        <path className="journey-branch-progress" d="M0 48H305V60" pathLength="1" />
+        <path className="journey-branch-progress journey-branch-progress-gold" d="M305 48H820V60" pathLength="1" />
+        <path className="journey-branch-arrow" d="M299 53L305 60L311 53" />
+        <path className="journey-branch-arrow journey-branch-arrow-gold" d="M814 53L820 60L826 53" />
+        {active && !reducedMotion && (
+          <>
+            <circle className="journey-branch-particle" cx="0" cy="0" r="3">
+              <animateMotion begin={`${delay}ms`} dur="620ms" path="M0 48H305V60" fill="freeze" />
+            </circle>
+            <circle className="journey-branch-particle journey-branch-particle-gold" cx="0" cy="0" r="3">
+              <animateMotion begin={`${delay + 240}ms`} dur="780ms" path="M305 48H820V60" fill="freeze" />
+            </circle>
+          </>
+        )}
+      </svg>
+      <svg
+        aria-hidden="true"
+        className={`journey-route-branch journey-route-branch-tablet${active ? ' is-active' : ''}`}
+        viewBox="0 0 1000 64"
+        preserveAspectRatio="none"
+        style={{ '--journey-delay': `${delay}ms` }}
+      >
+        <path className="journey-branch-track" d="M500 0V25H305V60" />
+        <path className="journey-branch-track journey-branch-track-gold" d="M500 25H820V60" />
+        <path className="journey-branch-progress" d="M500 0V25H305V60" pathLength="1" />
+        <path className="journey-branch-progress journey-branch-progress-gold" d="M500 25H820V60" pathLength="1" />
+        <path className="journey-branch-arrow" d="M299 53L305 60L311 53" />
+        <path className="journey-branch-arrow journey-branch-arrow-gold" d="M814 53L820 60L826 53" />
+        {active && !reducedMotion && (
+          <>
+            <circle className="journey-branch-particle" cx="0" cy="0" r="3">
+              <animateMotion begin={`${delay}ms`} dur="690ms" path="M500 0V25H305V60" fill="freeze" />
+            </circle>
+            <circle className="journey-branch-particle journey-branch-particle-gold" cx="0" cy="0" r="3">
+              <animateMotion begin={`${delay + 240}ms`} dur="780ms" path="M500 0V25H820V60" fill="freeze" />
+            </circle>
+          </>
+        )}
+      </svg>
+      <div
+        aria-hidden="true"
+        className={`journey-route-branch-mobile${active ? ' is-active' : ''}`}
+        style={{ '--journey-delay': `${delay}ms` }}
+      />
+    </>
+  );
+}
+
+function JourneyInvestorBranch({ active, reducedMotion }) {
+  const delay = 1950;
+  return (
+    <svg
+      aria-hidden="true"
+      className={`journey-investor-branch${active ? ' is-active' : ''}`}
+      viewBox="0 0 100 34"
+      preserveAspectRatio="none"
+      style={{ '--journey-delay': `${delay}ms` }}
+    >
+      <path className="journey-branch-track" d="M50 0V10H25V32" />
+      <path className="journey-branch-track" d="M50 10H75V32" />
+      <path className="journey-branch-progress" d="M50 0V10H25V32" pathLength="1" />
+      <path className="journey-branch-progress" d="M50 10H75V32" pathLength="1" />
+      <path className="journey-branch-arrow" d="M21 27L25 33L29 27" />
+      <path className="journey-branch-arrow" d="M71 27L75 33L79 27" />
+      {active && !reducedMotion && (
+        <>
+          <circle className="journey-branch-particle" cx="0" cy="0" r="2.5">
+            <animateMotion begin={`${delay}ms`} dur="470ms" path="M50 0V10H25V32" fill="freeze" />
+          </circle>
+          <circle className="journey-branch-particle" cx="0" cy="0" r="2.5">
+            <animateMotion begin={`${delay + 120}ms`} dur="500ms" path="M50 0V10H75V32" fill="freeze" />
+          </circle>
+        </>
+      )}
+    </svg>
+  );
+}
+
+function JourneyStepCard({ number, title, text, icon: Icon, delay, resident = false }) {
+  return (
+    <article
+      className={`journey-card journey-stage-card${resident ? ' journey-card-resident' : ''}`}
+      style={{ '--journey-delay': `${delay}ms` }}
+    >
+      <div className="journey-sequence journey-stage-content">
+        <div className="flex items-center justify-between">
+          <span className={`journey-number${resident ? ' journey-number-gold' : ''}`} aria-label={`Step ${number}`}>
+            {number}
+          </span>
+          <span className={`journey-icon${resident ? ' journey-icon-gold' : ''}`} aria-hidden="true">
+            <Icon size={22} strokeWidth={1.8} />
+          </span>
+        </div>
+        <h3 className="brand-serif mt-5 text-[21px] leading-[1.25] !tracking-normal text-navy sm:text-[23px]">{title}</h3>
+        <p className="mt-3 text-[15px] leading-[24px] text-[#475775]">{text}</p>
+      </div>
+    </article>
+  );
+}
+
+function HowItWorksJourney() {
+  const sectionRef = useRef(null);
+  const [reducedMotion] = useState(() => (
+    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  ));
+  const [journeyActive, setJourneyActive] = useState(reducedMotion);
+
+  useEffect(() => {
+    if (journeyActive || !sectionRef.current) return undefined;
+    if (!('IntersectionObserver' in window)) {
+      setJourneyActive(true);
+      return undefined;
+    }
+
+    const section = sectionRef.current;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.intersectionRatio >= 0.28) {
+        setJourneyActive(true);
+        observer.disconnect();
+      }
+    }, { threshold: 0.28 });
+    const activateIfVisible = () => {
+      if (document.visibilityState !== 'visible') return;
+      const bounds = section.getBoundingClientRect();
+      const visibleWidth = Math.max(0, Math.min(bounds.right, window.innerWidth) - Math.max(bounds.left, 0));
+      const visibleHeight = Math.max(0, Math.min(bounds.bottom, window.innerHeight) - Math.max(bounds.top, 0));
+      const visibleRatio = bounds.width * bounds.height > 0
+        ? (visibleWidth * visibleHeight) / (bounds.width * bounds.height)
+        : 0;
+      if (visibleRatio >= 0.28) {
+        setJourneyActive(true);
+        observer.disconnect();
+      }
+    };
+    observer.observe(section);
+    document.addEventListener('visibilitychange', activateIfVisible);
+    activateIfVisible();
+    return () => {
+      observer.disconnect();
+      document.removeEventListener('visibilitychange', activateIfVisible);
+    };
+  }, [journeyActive]);
+
+  return (
+    <section
+      id="how-it-works"
+      ref={sectionRef}
+      className={`journey-section bg-white px-4 py-[62px] sm:px-6 xl:py-[82px]${journeyActive ? ' journey-active' : ''}`}
+    >
+      <div className="mx-auto max-w-[1196px]">
+        <div className="journey-sequence" style={{ '--journey-delay': '0ms' }}>
+          <SectionHeader label="How it works" title="Get started in 4 simple steps." />
+        </div>
+        <p
+          className="journey-sequence mx-auto mt-4 max-w-[680px] text-center text-[17px] leading-[1.6] text-[#475775]"
+          style={{ '--journey-delay': '100ms' }}
+        >
+          Open an account, complete KYC and choose your route to invest.
+        </p>
+
+        <div className="journey-flow mx-auto mt-10 max-w-[1196px] xl:mt-14">
+          <div className="journey-stage-one">
+            <JourneyStepCard
+              number="1"
+              title="Open an account"
+              text="Sign up online in a few minutes."
+              icon={UserRoundPlus}
+              delay={350}
+            />
+          </div>
+
+          <JourneyConnector className="journey-link-one" delay={740} active={journeyActive} reducedMotion={reducedMotion} />
+
+          <div className="journey-stage-two">
+            <JourneyStepCard
+              number="2"
+              title="Complete KYC"
+              text="Verify your identity digitally in about a day. No branch visits and no paperwork."
+              icon={FileCheck}
+              delay={930}
+            />
+          </div>
+
+          <JourneyConnector className="journey-link-routes" delay={1320} active={journeyActive} reducedMotion={reducedMotion} />
+
+          <div className="journey-routes">
+            <JourneyRouteBranch active={journeyActive} reducedMotion={reducedMotion} />
+            <div className="journey-route-options">
+              <article
+                className="journey-card journey-choice-card journey-route-option journey-route-option-investors"
+                style={{ '--journey-delay': '1520ms' }}
+              >
+                <div className="journey-sequence journey-choice-content">
+                  <div className="flex items-center gap-3">
+                    <span className="journey-number" aria-label="Step 3">3</span>
+                    <h3 className="brand-serif text-[18px] leading-[1.2] !tracking-normal text-navy sm:text-[20px]">Choose your investor type</h3>
+                  </div>
+                  <JourneyInvestorBranch active={journeyActive} reducedMotion={reducedMotion} />
+                  <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+                    {investorRouteCards.map((route, index) => {
+                      const Icon = route.icon;
+                      return (
+                        <div
+                          key={route.title}
+                          className="journey-card journey-investor-card"
+                          style={{ '--journey-delay': `${2100 + index * 130}ms` }}
+                        >
+                          <div className="journey-sequence journey-investor-content">
+                            <span className="journey-icon journey-icon-small" aria-hidden="true">
+                              <Icon size={18} strokeWidth={1.8} />
+                            </span>
+                            <h4 className="brand-serif mt-3 text-[16px] leading-[1.2] !tracking-normal text-navy sm:text-[17px]">{route.title}</h4>
+                            <p className="mt-2 text-[13px] leading-[20px] text-[#475775] sm:text-[14px]">{route.text}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </article>
+
+              <div className="journey-route-option journey-route-option-resident">
+                <JourneyStepCard
+                  number="4"
+                  title="Resident Indians"
+                  text="Invest through the RBI's LRS scheme."
+                  icon={Landmark}
+                  delay={2360}
+                  resident
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p
+          className="journey-sequence mt-8 text-center text-[14px] leading-5 text-[#475775] xl:mt-10"
+          style={{ '--journey-delay': '2680ms' }}
+        >
+          Minimum US $10,000, top-up from US $1,000. Partial / Full withdrawal anytime.
+        </p>
+        <div className="journey-sequence mt-8 text-center xl:mt-10" style={{ '--journey-delay': '2860ms' }}>
+          <PrimaryButton size="steps" href="/portfolios/all-weather">Open account</PrimaryButton>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -385,8 +1179,24 @@ function FinalCTA() {
       <div className="mx-auto flex min-h-[358px] max-w-[920px] flex-col items-center justify-center rounded-[40px] bg-[linear-gradient(135deg,#2150E8_0%,#0A1B3D_62%)] px-6 py-[70px] text-center text-white sm:px-10">
         <h2 className="brand-serif text-[36px] leading-[1.2] !tracking-normal text-white md:text-[48px]">Start with one account.</h2>
         <p className="mt-4 text-[16px] leading-6 text-[#C9D6F5]">Start from India. Invest in the world.</p>
-        <div className="mt-8 flex justify-center">
-          <PrimaryButton size="cta" href="/portfolios/all-weather">Start investing</PrimaryButton>
+        <div className="mt-8 flex w-full flex-col items-center gap-3 md:w-auto md:flex-row md:gap-4">
+          <PrimaryButton
+            size="cta"
+            href={APP_INSTALL_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="!h-[54px] w-full max-w-[320px] md:!h-[62px] md:w-auto md:max-w-none"
+          >
+            Start investing
+          </PrimaryButton>
+          <a
+            href={CALENDLY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex h-[54px] w-full max-w-[320px] items-center justify-center gap-2 rounded-[14px] border border-white/35 bg-white/5 px-6 text-[16px] font-semibold text-white transition-colors hover:border-white/60 hover:bg-white/10 md:h-[62px] md:w-auto md:max-w-none"
+          >
+            Speak with the team <ArrowRight aria-hidden="true" size={16} strokeWidth={2} />
+          </a>
         </div>
       </div>
     </section>
@@ -399,7 +1209,7 @@ function SiteFooter() {
       <div className="mx-auto w-[calc(100%-32px)] max-w-[1280px] pb-[60px] pt-12 sm:w-[calc(100%-48px)] xl:w-full xl:pt-16">
         <div className="grid gap-10 lg:grid-cols-[410px_1fr] lg:gap-0">
           <div className="max-w-[410px]">
-            <BrandLogo className="text-[22px] font-semibold tracking-normal text-white" />
+            <BrandLogo imageClassName="h-[98px] w-[178px] rounded-lg bg-white p-2" />
             <p className="mt-4 text-[15px] leading-[23px] text-[#C5D0E8]">Professionally managed global investment portfolios for Indian residents, NRIs and foreign investors.</p>
             <p className="mt-3 text-[13px] leading-5 text-[#8FA0C4]">Execution and custody: Stockal (Borderless Softtech Pvt Ltd) and DriveWealth.</p>
           </div>
@@ -408,7 +1218,7 @@ function SiteFooter() {
               <h3 className="text-[14px] font-semibold leading-5 text-[#F7CD62]">Explore</h3>
               <ul className="mt-[14px] space-y-[10px] text-[15px] leading-5 text-[#C5D0E8]">
                 <li><Link to="/portfolios/all-weather" className="hover:text-white">Portfolios</Link></li>
-                <li><Link to="/#why-us" className="hover:text-white">Why U.S.</Link></li>
+                <li><Link to="/#why-us" className="hover:text-white">Why Uss</Link></li>
                 <li><Link to="/#how-it-works" className="hover:text-white">How it works</Link></li>
                 <li><Link to="/#resources" className="hover:text-white">Resources</Link></li>
               </ul>
@@ -443,7 +1253,8 @@ function AnnouncementBar() {
       <div className="mx-auto w-[calc(100%-32px)] max-w-[1280px] text-center text-[14px] text-navy">
         <div className="flex flex-nowrap items-center justify-center gap-2 font-medium sm:gap-3">
           <span className="inline-flex shrink-0 rounded-full bg-[#fff4d6] px-3 py-1 text-[12px] font-medium text-[#7a5410]">New</span>
-          <span className="min-w-0 text-[10px] leading-[13px] sm:text-[14px] sm:leading-5">All Weather Portfolio is now open. Global ETF portfolio built on the Layered Pyramid.</span>
+          <span className="min-w-0 text-[10px] leading-[13px] sm:text-[14px] sm:leading-5">All Weather Portfolio is now open. Global UCITS portfolio built on the Layered Pyramid approach to portfolio management.
+</span>
           <span className="shrink-0 text-[16px] text-blue">→</span>
         </div>
       </div>
@@ -455,7 +1266,6 @@ function Navbar() {
   const { pathname } = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const isPortfolio = pathname.startsWith('/portfolios/');
 
   useEffect(() => {
     const updateScroll = () => setScrolled(window.scrollY > 8);
@@ -463,6 +1273,20 @@ function Navbar() {
     window.addEventListener('scroll', updateScroll, { passive: true });
     return () => window.removeEventListener('scroll', updateScroll);
   }, []);
+
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const previousOverflow = document.body.style.overflow;
+    const closeOnDesktop = () => {
+      if (window.innerWidth >= 1024) setMenuOpen(false);
+    };
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('resize', closeOnDesktop);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('resize', closeOnDesktop);
+    };
+  }, [menuOpen]);
 
   const linkFor = (item) => item.href.startsWith('#')
     ? pathname === '/' ? item.href : `/${item.href}`
@@ -475,7 +1299,7 @@ function Navbar() {
         <BrandLogo className="justify-self-start" />
         <div className="hidden items-center gap-8 whitespace-nowrap lg:flex">
           {navItems.map((item) => {
-            const active = item.label === 'Portfolios' && isPortfolio;
+            const active = item.label === 'Why Us' && pathname === '/';
             const href = linkFor(item);
             return item.href.startsWith('#') ? (
               <a key={item.label} href={href} className={linkClass(active)}>{item.label}</a>
@@ -484,12 +1308,13 @@ function Navbar() {
             );
           })}
         </div>
-        <div className="flex items-center justify-self-end gap-5">
+        <div className="flex items-center justify-self-end gap-4">
           <button type="button" aria-label="Search" className="hidden h-5 w-5 items-center justify-center text-navy lg:inline-flex">
             <Search aria-hidden="true" size={20} strokeWidth={1.75} />
           </button>
-          <button type="button" className="hidden text-[15px] font-medium text-navy lg:inline-flex">Log in</button>
-          <Link to="/portfolios/all-weather" className="primary-button hidden h-11 items-center rounded-xl bg-blue px-5 text-[15px] font-semibold text-white lg:inline-flex">Get started</Link>
+          <a href={AUTH_URL} target="_blank" rel="noopener noreferrer" className="hidden whitespace-nowrap text-[14px] font-medium text-navy lg:inline-flex">Log in / Sign up</a>
+          <a href={AUTH_URL} target="_blank" rel="noopener noreferrer" className="primary-button hidden h-11 items-center whitespace-nowrap rounded-xl bg-blue px-4 text-[14px] font-semibold text-white lg:inline-flex">Start investing</a>
+          <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" className="hidden h-11 items-center whitespace-nowrap rounded-xl border border-[#D6E1F0] bg-white px-4 text-[14px] font-semibold text-navy transition-colors hover:bg-[#F4F7FB] lg:inline-flex">Speak with us</a>
           <button
             type="button"
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
@@ -502,10 +1327,10 @@ function Navbar() {
         </div>
       </nav>
       {menuOpen && (
-        <div className="absolute inset-x-0 top-full border-b border-[#DCE5F1] bg-white px-6 pb-5 pt-2 shadow-[0_12px_24px_rgba(10,27,61,0.08)] lg:hidden">
+        <div className="absolute inset-x-0 top-full min-h-[calc(100dvh-79px)] overflow-y-auto overscroll-contain border-b border-[#DCE5F1] bg-white px-6 pb-5 pt-2 shadow-[0_12px_24px_rgba(10,27,61,0.08)] lg:hidden">
           <div className="mx-auto flex max-w-[1280px] flex-col">
             {navItems.map((item) => {
-              const active = item.label === 'Portfolios' && isPortfolio;
+              const active = item.label === 'Why Us' && pathname === '/';
               const href = linkFor(item);
               return item.href.startsWith('#') ? (
                 <a key={item.label} href={href} onClick={() => setMenuOpen(false)} className={`${linkClass(active)} border-b border-[#EEF2F8] py-3`}>{item.label}</a>
@@ -516,8 +1341,9 @@ function Navbar() {
             <button type="button" aria-label="Search" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 border-b border-[#EEF2F8] py-3 text-left text-[15px] font-medium text-[#475775]">
               <Search aria-hidden="true" size={20} strokeWidth={1.75} /> Search
             </button>
-            <button type="button" onClick={() => setMenuOpen(false)} className="border-b border-[#EEF2F8] py-3 text-left text-[15px] font-medium text-[#475775]">Log in</button>
-            <Link to="/portfolios/all-weather" onClick={() => setMenuOpen(false)} className="primary-button mt-4 inline-flex h-11 items-center justify-center rounded-xl bg-blue px-5 text-[15px] font-semibold text-white">Get started</Link>
+            <a href={AUTH_URL} target="_blank" rel="noopener noreferrer" onClick={() => setMenuOpen(false)} className="border-b border-[#EEF2F8] py-3 text-left text-[15px] font-medium text-[#475775]">Log in / Sign up</a>
+            <a href={AUTH_URL} target="_blank" rel="noopener noreferrer" onClick={() => setMenuOpen(false)} className="primary-button mt-4 inline-flex h-11 items-center justify-center rounded-xl bg-blue px-5 text-[15px] font-semibold text-white">Start investing</a>
+            <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" onClick={() => setMenuOpen(false)} className="mt-3 inline-flex h-11 items-center justify-center rounded-xl border border-[#D6E1F0] bg-white px-5 text-[15px] font-semibold text-navy">Speak with us</a>
           </div>
         </div>
       )}
@@ -591,13 +1417,12 @@ function PyramidSection() {
         <header className="text-center">
           <span className="inline-flex h-8 items-center rounded-full bg-gold-tint px-[14px] text-[13px] font-semibold text-gold-text">How we invest</span>
           <h2 className="brand-serif mt-4 text-[36px] leading-[1.15] !tracking-normal text-navy md:text-[48px]">The Layered Pyramid Approach.</h2>
-          <p className="mx-auto mt-4 max-w-[680px] text-[18px] leading-[1.5] text-[#475775]">Four layers of ETFs, from the safest at the base to the boldest at the top. Smaller layers at the top get less money.</p>
+          <p className="mx-auto mt-4 max-w-[680px] text-[18px] leading-[1.5] text-[#475775]">Four layers of ETFs, from the safest at the base to the boldest at the top.</p>
         </header>
         <PyramidLayersView />
-        <div className="mx-auto mt-9 max-w-[860px] rounded-3xl bg-gold-tint p-7 text-left md:mt-14 md:p-9">
-          <h3 className="brand-serif text-[28px] leading-[1.25] !tracking-normal text-navy">Why ETFs, and why Irish wrappers</h3>
-          <p className="mt-3 text-[16px] leading-6 text-[#475775]">Our portfolios hold ETFs only, never direct US stocks. Direct US stocks can expose non US investors to US inheritance tax. ETFs domiciled in Ireland help reduce that exposure, under the US and Ireland estate treaty.</p>
-          <p className="mt-3 text-[13px] leading-5 text-gold-text">Wording to be confirmed with compliance and tax counsel.</p>
+        <div className="mx-auto mt-9 max-w-[860px] rounded-3xl bg-gold-tint p-5 text-left sm:p-7 md:mt-14 md:p-9">
+          <h3 className="brand-serif text-[28px] leading-[1.25] !tracking-normal text-navy">The barbell approach</h3>
+          <p className="mt-3 text-[16px] leading-6 text-[#475775]">A capital-preservation core compounded with a bounded high-conviction growth sleeve — sized so that even a complete drawdown of the growth side cannot materially impair the core.</p>
         </div>
         <div className="mt-10 flex flex-wrap justify-center gap-3">
           {pyramidChips.map((chip) => (
@@ -612,6 +1437,49 @@ function PyramidSection() {
   );
 }
 
+// return (
+//     <section data-reveal className="bg-white px-4 pt-[84px] pb-[80px] sm:px-6">
+//       <div className="mx-auto max-w-[1188px]">
+//         <header className="text-center">
+//           <span className="inline-flex h-8 items-center rounded-full bg-gold-tint px-[14px] text-[13px] font-semibold text-gold-text">How we invest</span>
+//           <h2 className="brand-serif mt-4 text-[36px] leading-[1.15] !tracking-normal text-navy md:text-[48px]">The Layered Pyramid Approach.</h2>
+//           <p className="mx-auto mt-4 max-w-[680px] text-[18px] leading-[1.5] text-[#475775]">Four layers of ETFs, from the safest at the base to the boldest at the top. </p>
+//         </header>
+//         <PyramidLayersView />
+//         <div className="mx-auto mt-9 max-w-[860px] rounded-3xl bg-gold-tint p-5 text-left sm:p-7 md:mt-14 md:p-9">
+//           <h3 className="brand-serif text-[28px] leading-[1.25] !tracking-normal text-navy">The barbell approach</h3>
+//           <p className="mt-3 text-[16px] leading-6 text-[#475775]">A capital-preservation core compounded with a bounded high-conviction growth sleeve — sized so that even a complete drawdown of the growth side cannot materially impair the core.</p>
+//           <div role="group" aria-label="Barbell allocation: 70 to 80 percent Preservation Core and 20 to 30 percent Growth Sleeve" className="relative mt-8 grid grid-cols-[minmax(0,1fr)_minmax(64px,0.6fr)_minmax(0,1fr)] items-center sm:grid-cols-[minmax(0,1fr)_minmax(96px,0.6fr)_minmax(0,1fr)] md:mt-10">
+//             <div className="relative z-10 flex min-h-[108px] flex-col items-center justify-center rounded-[8px] border border-[#B8C6D8] bg-[#FFF9E9] p-2 text-center sm:min-h-[122px] sm:p-5 md:min-h-[132px] md:p-6">
+//               <div className="brand-serif text-[20px] font-bold leading-tight text-navy sm:text-[32px] md:text-[40px]">70–80%</div>
+//               <div className="mt-2 text-[9px] font-semibold leading-[1.35] tracking-[0.02em] text-[#475775] sm:text-[11px] sm:tracking-[0.12em] md:text-[12px]">PRESERVATION<br />CORE</div>
+//             </div>
+//             <div className="relative z-20 flex h-10 items-center justify-center sm:h-12">
+//               <span aria-hidden="true" className="absolute left-0 top-1/2 h-[6px] w-1/2 -translate-y-1/2 bg-[#AAB8C9] sm:h-[8px]" />
+//               <span aria-hidden="true" className="absolute right-0 top-1/2 h-[6px] w-1/2 -translate-y-1/2 bg-[#AAB8C9] sm:h-[8px]" />
+//               <span aria-hidden="true" className="relative flex h-9 w-9 items-center justify-center rounded-full border-[4px] border-[#9EABC3] bg-gold-tint sm:h-11 sm:w-11 sm:border-[5px] md:h-12 md:w-12">
+//                 <span className="h-3 w-3 rounded-full bg-[#9EABC3] sm:h-4 sm:w-4" />
+//               </span>
+//             </div>
+//             <div className="relative z-10 flex min-h-[108px] flex-col items-center justify-center rounded-[8px] border border-[#E1C77D] bg-[#FFF4D6] p-2 text-center sm:min-h-[122px] sm:p-5 md:min-h-[132px] md:p-6">
+//               <div className="brand-serif text-[20px] font-bold leading-tight text-[#A87919] sm:text-[32px] md:text-[40px]">20–30%</div>
+//               <div className="mt-2 text-[9px] font-semibold leading-[1.35] tracking-[0.02em] text-[#475775] sm:text-[11px] sm:tracking-[0.12em] md:text-[12px]">GROWTH<br />SLEEVE</div>
+//             </div>
+//           </div>
+//         </div>
+//         <div className="mt-10 flex flex-wrap justify-center gap-3">
+//           {pyramidChips.map((chip) => (
+//             <span key={chip.text} className="inline-flex items-center gap-2 rounded-full border border-[#C9DAF4] bg-[#F1F6FD] px-4 py-2.5 text-[13px] font-semibold leading-5 text-navy">
+//               <chip.icon aria-hidden="true" size={16} strokeWidth={1.75} className="text-blue" />
+//               {chip.text}
+//             </span>
+//           ))}
+//         </div>
+//       </div>
+//     </section>
+//   );
+// }
+
 function AllWeatherBuildSection() {
   return (
     <section data-reveal className="bg-white px-4 py-[60px] sm:px-6 xl:py-[84px]">
@@ -620,9 +1488,8 @@ function AllWeatherBuildSection() {
         <p className="mt-4 text-center text-[17px] leading-[1.6] text-[#475775]">Layer sizes are set by our investment committee and reviewed every quarter.</p>
         <PyramidLayersView />
         <div className="mx-auto mt-14 max-w-[860px] rounded-[24px] bg-[#FFF4D6] p-8 text-left md:p-9">
-          <h3 className="brand-serif text-[28px] leading-[1.25] !tracking-normal text-navy">Why ETFs, and why Irish wrappers</h3>
-          <p className="mt-3 text-[16px] leading-6 text-[#475775]">Our portfolios hold ETFs only, never direct US stocks. Direct US stocks can expose non US investors to US inheritance tax. ETFs domiciled in Ireland help reduce that exposure, under the US and Ireland estate treaty.</p>
-          <p className="mt-3 text-[13px] leading-5 text-gold-text">Wording to be confirmed with compliance and tax counsel.</p>
+          <h3 className="brand-serif text-[28px] leading-[1.25] !tracking-normal text-navy">Why UCITS?</h3>
+          <p className="mt-3 text-[16px] leading-6 text-[#475775]">Our portfolios largely hold UCITS to enable our high networth clients to get twin benefits of no risk of estate tax applicability - and a more tax efficient structure (through lower withholding tax on dividends and Accumulation feature in our UCITS portfolio).</p>
         </div>
         <div className="mt-10 flex flex-wrap justify-center gap-3">
           {pyramidChips.map((chip) => (
@@ -665,44 +1532,116 @@ function AllWeatherPage() {
   );
 }
 
+function HeroPhrases() {
+  const [revealRef, isVisible] = useInView();
+  const phraseClass = `hero-phrase${isVisible ? ' is-visible' : ''}`;
+
+  return (
+    <div ref={revealRef} className="mt-7 flex flex-wrap items-center gap-2 text-[18px] font-bold leading-5 text-[#000] xl:mt-8">
+      <span className={phraseClass} style={{ '--reveal-delay': '0ms' }}>Multi Assets</span>
+      <span className="text-[#475775]">|</span>
+      <span className={phraseClass} style={{ '--reveal-delay': '350ms' }}>Multi Industry</span>
+      <span className="text-[#475775]">|</span>
+      <span className={phraseClass} style={{ '--reveal-delay': '700ms' }}>Multi Geography</span>
+      <span className="text-[#475775]">|</span>
+      <span className={phraseClass} style={{ '--reveal-delay': '1050ms' }}>Multi Currency</span>
+    </div>
+  );
+}
+
+function FaqAnswer({ answer }) {
+  return (
+    <div className="max-w-[780px] space-y-3 text-[13px] leading-[1.6] text-[#475775] sm:text-[14px]">
+      {answer.blocks.map((block, blockIndex) => {
+        if (block.type === 'paragraph') {
+          return <p key={`paragraph-${blockIndex}`}>{block.text}</p>;
+        }
+
+        if (block.type === 'bullets') {
+          return (
+            <ul key={`bullets-${blockIndex}`} className="list-disc space-y-1 pl-6 marker:text-[#B88721]">
+              {block.items.map((item) => <li key={item}>{item}</li>)}
+            </ul>
+          );
+        }
+
+        return (
+          <ol key={`numbered-${blockIndex}`} className="list-decimal space-y-3 pl-6 marker:font-semibold marker:text-[#B88721]">
+            {block.items.map((item) => (
+              <li key={item.title}>
+                <strong className="font-semibold text-navy">{item.title}</strong>
+                {item.text && <> {item.text}</>}
+                {item.children && (
+                  <ul className="mt-2 list-disc space-y-2 pl-5 marker:text-[#B88721]">
+                    {item.children.map((child) => (
+                      <li key={child.title}>
+                        <strong className="font-semibold text-navy">{child.title}</strong> {child.text}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ol>
+        );
+      })}
+      {answer.highlight && (
+        <p className="border-l-[3px] border-[#D9AD4B] py-1 pl-4 text-[13px] leading-[1.6] tracking-[0.01em] text-navy sm:text-[14px]">
+          {answer.highlight}
+        </p>
+      )}
+    </div>
+  );
+}
+
 function HomePage() {
-  const [openFaq, setOpenFaq] = useState(1);
+  const [activeQuestion, setActiveQuestion] = useState(null);
   const heroRef = useRef(null);
 
   return (
     <>
       <main className="bg-mist text-navy">
-        <section ref={heroRef} className="relative h-[220vh] md:h-[300vh]">
-          <div className="sticky top-[80px] flex min-h-[calc(100vh-80px)] items-center">
-            <div className="mx-auto w-[calc(100%-32px)] max-w-[1280px] py-2 xl:pb-12 xl:pt-16">
+        <section ref={heroRef} className="relative h-[120vh] md:h-[125vh]">
+          <div className="sticky top-[80px] flex min-h-[calc(100vh-80px)] items-start xl:min-h-0">
+            <div className="mx-auto w-[calc(100%-32px)] max-w-[1280px] pb-2 pt-6 md:pt-8 xl:pb-0 xl:pt-12">
               <div className="grid items-start gap-2 xl:grid-cols-[minmax(0,640px)_minmax(0,560px)] xl:gap-10">
                 <div>
                   {/* <div className="inline-flex rounded-full bg-[#fff4d6] px-[14px] py-[6px] text-[13px] font-medium leading-[18px] text-[#7a5410]">Managed ETF portfolios</div> */}
                   <h1 className="hero-title brand-serif mt-1 max-w-[640px] text-[30px] leading-[1.05] tracking-normal text-navy xl:mt-5 xl:text-[58px] xl:leading-[1.15]">Your wealth<br className="hidden xl:block" />Without Borders</h1>
 
-                  <div className="mt-7 flex flex-wrap items-center gap-2 text-[14px] font-medium leading-5 text-[#475775] xl:mt-8">
-                    <span>Multi Assets</span>
-                    <span className="text-[#C9DAF4]">|</span>
-                    <span>Multi Industry</span>
-                    <span className="text-[#C9DAF4]">|</span>
-                    <span>Multi Geography</span>
-                    <span className="text-[#C9DAF4]">|</span>
-                    <span>Multi Currency</span>
+                  <HeroPhrases />
+
+                  <p className="mt-6 max-w-[520px] text-[16px] leading-[1.55] text-[#475775] xl:mt-8 xl:text-[18px]">Simplicity of a single portfolio for all your major life stage needs - Built for the global Indian.</p>
+
+                  <div className="mt-2 flex w-full max-w-[320px] flex-col items-center gap-3 md:max-w-none md:flex-row md:gap-4 xl:mt-8">
+                    <PrimaryButton
+                      size="hero"
+                      href={APP_INSTALL_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full md:w-auto"
+                    >
+                      Start investing
+                    </PrimaryButton>
+                    <SecondaryButton
+                      size="hero"
+                      href={CALENDLY_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full border-[#dce5f1] bg-white md:w-auto"
+                    >
+                      Speak with us
+                    </SecondaryButton>
                   </div>
 
-                  <p className="mt-6 max-w-[520px] text-[16px] leading-[1.55] text-[#475775] xl:mt-8 xl:text-[18px]">Managed portfolios of global businesses, built for the global Indian.</p>
-
-                  <div className="mt-2 flex flex-wrap items-center gap-4 xl:mt-8">
-                    <PrimaryButton size="hero" href="/portfolios/all-weather">Start investing</PrimaryButton>
-                    <SecondaryButton size="hero" href="#how-it-works" className="border-[#dce5f1] bg-white">See how it works</SecondaryButton>
+                  <div className="mt-5 flex flex-wrap items-center gap-2 xl:flex-nowrap">
+                    <span className="rounded-full border border-[#D6E1F0] bg-white/80 px-3 py-1.5 text-[13px] font-medium leading-5 text-[#30446B]">No Lock in.</span>
+                    <span className="rounded-full border border-[#D6E1F0] bg-white/80 px-3 py-1.5 text-[13px] font-medium leading-5 text-[#30446B]">No Exit Fee.</span>
+                    <span className="rounded-full border border-[#D6E1F0] bg-white/80 px-3 py-1.5 text-[13px] font-medium leading-5 text-[#30446B]">Insured up to $0.5 Mn.</span>
                   </div>
-
-                  <div className="mt-2 flex flex-wrap items-center gap-x-6 gap-y-1 text-[14px] leading-[18px] text-[#475775] xl:mt-12 xl:gap-y-2 xl:leading-5">
-                    <span>SIPC member custody</span>
-                    <span className="hidden md:inline">·</span>
-                    <span>SEC registered broker-dealer</span>
-                    <span className="hidden md:inline">·</span>
-                    <span>Fully digital onboarding</span>
+                  <div className="mt-3 flex flex-col gap-1 text-[13px] leading-5 text-[#475775]">
+                    <span>Compliant with Indian, American and Irish laws.</span>
+                    <span>Convenient - Paperless, Seamless, Fully Digital.</span>
                   </div>
                 </div>
 
@@ -714,7 +1653,7 @@ function HomePage() {
           </div>
         </section>
 
-        <section data-reveal className="bg-mist px-4 py-[78px] sm:px-6 xl:py-[88px]">
+        <section id="why-us" data-reveal className="bg-mist px-4 pb-[78px] pt-[32px] sm:px-6 xl:pb-[88px] xl:pt-[36px]">
           <div className="mx-auto max-w-[1188px]">
             <header className="text-center">
               <span className="inline-flex h-8 items-center rounded-full bg-gold-tint px-[14px] text-[13px] font-semibold text-gold-text">Why invest globally</span>
@@ -734,64 +1673,28 @@ function HomePage() {
           </div>
         </section>
 
-        <section id="why-us" data-reveal className="bg-white px-4 py-[78px] sm:px-6 xl:py-[88px]">
-          <div className="mx-auto max-w-[1200px]">
-            <header className="text-center">
-              <span className="inline-flex h-8 items-center rounded-full bg-gold-tint px-[14px] text-[13px] font-semibold text-gold-text">Why US markets</span>
-              <h2 className="brand-serif mt-4 text-[36px] leading-[1.15] !tracking-normal text-navy md:text-[48px]">Built for a global portfolio.</h2>
-              <p className="mx-auto mt-4 max-w-[900px] text-[18px] leading-[1.5] text-[#475775]">The US is nearly half of the world's market value, against about 4% for India.</p>
-            </header>
-            <div className="mt-10 grid gap-6 md:grid-cols-3 xl:mt-[62px]">
-              {whyUsStats.map((stat, idx) => (
-                <article key={idx} className={`min-h-[188px] rounded-3xl p-7 xl:p-9 ${stat.tone === 'gold' ? 'bg-gold-tint' : 'bg-mist'}`}>
-                  <div className="brand-serif text-[48px] leading-[1.1] !tracking-normal text-navy">{stat.value}</div>
-                  <p className="mt-3 text-[16px] leading-6 text-[#475775]">{stat.desc}</p>
-                </article>
-              ))}
-            </div>
-            <p className="mt-10 text-center text-[13px] leading-5 text-[#7C8BA6] xl:mt-[52px]">Figures to be confirmed before launch. Past performance does not guarantee future results.</p>
-          </div>
-        </section>
-
         <section data-reveal className="bg-mist px-4 py-[78px] sm:px-6 xl:py-[88px]">
           <div className="mx-auto max-w-[1188px]">
             <header className="text-center">
-              <span className="inline-flex h-8 items-center rounded-full bg-gold-tint px-[14px] text-[13px] font-semibold text-gold-text">How most Indians invest in the US today</span>
+              <span className="mx-auto flex w-fit max-w-full items-center justify-center whitespace-normal rounded-full bg-gold-tint px-[14px] py-2 text-center text-[13px] font-semibold leading-4 text-gold-text">
+                How most Indians invest in Global markets today
+              </span>
               <h2 className="brand-serif mx-auto mt-4 max-w-[760px] text-[36px] leading-[1.15] !tracking-normal text-navy md:text-[48px]">
                 Most picks start with a tip, not<br className="hidden md:block" /> research.
               </h2>
               <p className="mt-4 text-[18px] leading-[1.5] text-[#475775]">Three common ways in, and why they often fall short.</p>
             </header>
-            <div className="mt-10 grid gap-6 md:grid-cols-2 xl:mt-[56px] xl:grid-cols-3">
-              {investorCards.map((card, idx) => (
-                <article key={idx} className="min-h-[252px] rounded-[28px] bg-white p-8 shadow-[0_8px_18px_rgba(10,27,61,0.035)]">
-                  <div aria-label={card.title} className={`inline-flex h-11 w-11 items-center justify-center rounded-full text-white ${idx === 0 ? 'bg-blue' : idx === 1 ? 'bg-gold' : 'bg-green'}`}>
-                    <card.icon aria-hidden="true" size={22} strokeWidth={1.75} />
-                  </div>
-                  <h3 className="brand-serif mt-4 text-[24px] leading-[1.3] !tracking-normal text-navy">{card.title}</h3>
-                  <p className="mt-3 text-[16px] leading-[26px] text-[#475775]">{card.body}</p>
-                </article>
-              ))}
-            </div>
-            <div className="mx-auto mt-12 min-h-[226px] max-w-[1172px] rounded-[28px] bg-navy p-8 text-white md:p-12 xl:mt-14">
+            <div data-reveal className="what-goes-wrong-panel mx-auto mt-8 w-full max-w-[1172px] rounded-[28px] bg-navy px-5 py-7 text-white sm:px-7 md:p-10 xl:mt-12">
               <h3 className="brand-serif text-[28px] leading-[1.2] !tracking-normal text-white">What goes wrong</h3>
-              <div className="mt-4 grid gap-x-8 gap-y-4 text-[16px] leading-6 md:grid-cols-2">
-                <div className="flex items-start gap-4">
-                  <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#2A3F73] text-[14px] font-semibold text-gold-light">x</span>
-                  <span>The pick rests on a tip or one small piece of information</span>
-                </div>
-                <div className="flex items-start gap-4">
-                  <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#2A3F73] text-[14px] font-semibold text-gold-light">x</span>
-                  <span>Nothing tells you when to buy</span>
-                </div>
-                <div className="flex items-start gap-4">
-                  <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#2A3F73] text-[14px] font-semibold text-gold-light">x</span>
-                  <span>Nothing tells you when to sell</span>
-                </div>
-                <div className="flex items-start gap-4">
-                  <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#2A3F73] text-[14px] font-semibold text-gold-light">x</span>
-                  <span>Returns end up below what you expected</span>
-                </div>
+              <div className="mt-5 grid gap-x-8 gap-y-5 text-[16px] leading-6 md:grid-cols-2">
+                {whatGoesWrong.map((statement, index) => (
+                  <div key={statement} style={{ '--reveal-delay': `${index * 90}ms` }} className="what-goes-wrong-item flex items-start gap-3 sm:gap-4">
+                    <span aria-hidden="true" className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#2A3F73] text-gold-light">
+                      <X size={15} strokeWidth={2.2} />
+                    </span>
+                    <span>{statement}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -800,153 +1703,121 @@ function HomePage() {
         <PyramidSection />
 
         <PortfolioShowcase />
+        <GlobalPortfoliosSection />
 
         <section className="bg-[#0A1B3D] px-4 py-[62px] sm:px-6 xl:py-[82px]">
           <div className="mx-auto max-w-[1256px]">
-            <SectionHeader label="Safety" pillClassName="!border-0 !bg-[#1B2B5E] !text-[#F7CD62]" titleClassName="text-white" title="Safety is our cornerstone." />
-            <p className="mx-auto mt-4 max-w-[700px] text-center text-[18px] leading-[1.6] text-[#B7C3DB]">All investments are in listed securities, held in your name. You own and control what is in your portfolio.</p>
-            <div className="mt-10 grid items-start gap-[22px] md:grid-cols-2 xl:mt-14 xl:grid-cols-4">
+            <SectionHeader label="Safety" pillClassName="!border-0 !bg-[#1B2B5E] !text-[#F7CD62]" titleClassName="!mt-3 text-white" title="Portfolio that you own and control" />
+            <p className="mx-auto mt-3 max-w-[700px] text-center text-[18px] leading-[1.6] text-[#B7C3DB]">All investments are in listed securities, held in your name. You own and control what is in your portfolio.</p>
+            <div className="mt-8 grid auto-rows-fr items-stretch gap-[22px] md:grid-cols-2 xl:mt-10 xl:grid-cols-4">
               {safetyCards.map((card) => (
-                <article key={card.title} className="min-h-[204px] rounded-[20px] border border-[#24407F] bg-[#12285C] p-7 text-white">
+                <article key={card.title} className="flex min-h-[272px] flex-col rounded-[20px] border border-[#24407F] bg-[#12285C] p-7 text-white">
                   <div aria-label={card.title} className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#F7CD62] text-[#0A1B3D]">
                     <card.icon aria-hidden="true" size={22} strokeWidth={1.75} />
                   </div>
                   <h3 className="mt-4 text-[20px] font-semibold leading-[1.3] text-white">{card.title}</h3>
-                  <p className="mt-2 text-[15px] leading-6 text-[#B7C3DB]">{card.desc}</p>
+                  <p className="mt-3 text-[15px] leading-6 text-[#B7C3DB]">{card.desc}</p>
                 </article>
               ))}
             </div>
-            <p className="mt-10 text-center text-[13px] leading-5 text-[#8FA0C4] xl:mt-12">Custody and broker-dealer wording to be reviewed by compliance.</p>
-          </div>
+/          </div>
         </section>
 
         <section data-reveal className="bg-mist px-4 py-[62px] sm:px-6 xl:py-[82px]">
-          <div className="mx-auto max-w-[1188px]">
+          <div className="mx-auto max-w-[1840px]">
             <SectionHeader label="Who it is for" title="Who is BrainTree for?" />
-            <AudienceCards cards={audienceCards} minHeight="min-h-[272px]" />
-            <p className="mt-8 text-center text-[15px] leading-6 text-[#475775] xl:mt-10">Also open to Indian residents and GCC residents.</p>
+            <AudienceCards cards={audienceCards} />
+            {/* <p className="mt-8 text-center text-[15px] leading-6 text-[#475775] xl:mt-10">Also open to Indian residents and GCC residents.</p> */}
           </div>
         </section>
 
-        <section id="how-it-works" className="bg-white px-4 py-[62px] sm:px-6 xl:py-[82px]">
-          <div className="mx-auto max-w-[1196px]">
-            <SectionHeader label="How it works" title="Get started in 3 simple steps." />
-            <p className="mx-auto mt-4 max-w-[680px] text-center text-[17px] leading-[1.6] text-[#475775]">Open an account, complete KYC and invest through LRS. Then invest in the whole portfolio with one click.</p>
-            <div className="mx-auto mt-10 grid max-w-[1188px] gap-6 md:grid-cols-2 xl:mt-14 xl:grid-cols-3">
-              {steps.map((step) => (
-                <article key={step.number} className="min-h-[280px] rounded-3xl border border-[#DCE5F1] bg-[#F5F8FD] p-8">
-                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-blue text-[18px] font-semibold text-white">{step.number}</div>
-                  <h3 className="brand-serif mt-4 text-[24px] leading-[1.3] !tracking-normal text-navy">{step.title}</h3>
-                  <p className="mt-3 text-[16px] leading-[26px] text-[#475775]">{step.text}</p>
-                </article>
-              ))}
-            </div>
-            <p className="mt-8 text-center text-[14px] leading-5 text-[#475775] xl:mt-10">Minimum US $10,000, top-up from US $2,000 (to be confirmed). No lock-in.</p>
-            <div className="mt-8 text-center xl:mt-10">
-              <PrimaryButton size="steps" href="/portfolios/all-weather">Open account</PrimaryButton>
-            </div>
-          </div>
-        </section>
+        <HowItWorksJourney />
 
-        <section id="about" data-reveal className="bg-mist px-4 py-[62px] sm:px-6 xl:py-[78px]">
-          <div className="mx-auto max-w-[1200px]">
-            <SectionHeader label="Team" title="Our team has worked at" />
-            <div className="mt-8 overflow-x-auto">
-              <div className="mx-auto flex w-max flex-nowrap justify-center gap-4">
-                {['Citigroup', 'HDFC AMC', 'New York Life', 'IL&FS', 'Temporal', 'Erdos'].map((company) => (
-                  <span key={company} className="inline-flex whitespace-nowrap rounded-full border border-[#dfe8f4] bg-white px-[18px] py-2.5 text-[14px] font-medium leading-5 text-navy">{company}</span>
-                ))}
-              </div>
-            </div>
-            <div className="mx-auto mt-10 grid max-w-[1128px] gap-6 md:grid-cols-2 xl:mt-12 xl:grid-cols-4">
+        <section id="about" data-reveal className="bg-mist px-4 py-12 sm:px-6 sm:py-14 xl:py-16">
+          <div className="mx-auto max-w-[1160px]">
+            <header className="max-w-[740px]">
+              <p className="text-[11px] font-bold leading-4 tracking-[0.1em] text-[#B2760A] sm:text-[12px]">THE PEOPLE BEHIND BRAINTREE CAPITAL</p>
+              <h2 className="brand-serif mt-2 text-[30px] leading-[1.16] !tracking-normal text-navy sm:text-[38px] md:text-[42px]">
+                <span className="block">Decades of institutional experience.</span>
+                <span className="block">Aligned with your interests.</span>
+              </h2>
+              <p className="mt-3 max-w-[700px] text-[14px] leading-[1.6] text-[#475775] sm:text-[15px]">
+                Our team combines CXO-level leadership across banking, asset management, and technology with deep quantitative portfolio management expertise. Everyone is personally invested in the same strategies we manage for clients.
+              </p>
+            </header>
+            <div className="mt-6 grid items-stretch gap-4 md:grid-cols-2 sm:mt-7">
               {teamMembers.map((member, index) => (
-                <article key={member.name} data-reveal-card style={{ '--reveal-delay': `${index * 80}ms` }} className="min-h-[294px] rounded-[28px] border border-[#dfe8f4] bg-white p-6">
-                  <div className="mx-auto mb-5 flex h-[120px] w-[120px] items-center justify-center rounded-full bg-gradient-to-br from-[#f7f1e9] to-[#dfe6ff] text-[24px] font-medium text-navy">{member.name.split(' ').map((word) => word[0]).slice(0,2).join('')}</div>
-                  <h3 className="text-center text-[22px] leading-[1.25] tracking-normal text-navy">{member.name}</h3>
-                  <p className="mt-3 text-center text-[14px] leading-5 text-[#475775]">{member.title}</p>
-                </article>
+                <TeamMemberCard key={member.name} member={member} index={index} />
               ))}
             </div>
+            <div className="mt-4">
+              <TeamMemberCard member={teamAdvisor} index={teamMembers.length} horizontal />
+            </div>
           </div>
         </section>
 
-        <section id="resources" data-reveal className="bg-white px-4 py-[62px] sm:px-6 xl:py-[82px]">
-          <div className="mx-auto max-w-[1232px]">
-            <SectionHeader label="Learn" title="Learn before you invest." />
-            <p className="mt-4 text-center text-[16px] leading-6 text-[#475775]">Articles, videos and guides, in plain words.</p>
-            <div className="mt-10 grid min-h-[146px] gap-8 rounded-[24px] bg-[#FFF4D6] p-8 md:grid-cols-2 md:gap-[60px] md:p-9">
-              <div className="text-left">
-                <div className="text-[12px] font-semibold uppercase leading-4 tracking-[0.04em] text-[#7A5410]">Indian tax residents</div>
-                <p className="brand-serif mt-1.5 text-[22px] leading-[1.4] !tracking-normal text-navy">Global income is taxed in India.</p>
-              </div>
-              <div className="text-left">
-                <div className="text-[12px] font-semibold uppercase leading-4 tracking-[0.04em] text-[#7A5410]">Non resident Indians</div>
-                <p className="brand-serif mt-1.5 text-[22px] leading-[1.4] !tracking-normal text-navy">Only Indian income is taxed in India. The rest is taxed in the country where it was earned.</p>
-              </div>
-            </div>
-            <p className="mt-8 text-center text-[13px] leading-5 text-[#7C8BA6] xl:mt-10">A thumb rule, not tax advice. Wording to be confirmed.</p>
-            <div className="mx-auto mt-8 grid max-w-[1184px] gap-6 md:grid-cols-3 xl:mt-10">
-              {learnCards.map((card, index) => {
-                const CoverIcon = learnTypeIcons[card.type];
-                return (
-                <article key={card.title} data-reveal-card style={{ '--reveal-delay': `${index * 80}ms` }} className="h-[314px] overflow-hidden rounded-[20px] border border-[#DCE5F1] bg-white">
-                  {card.cover ? (
-                    <img src={card.cover} alt="" className="h-[180px] w-full object-cover" />
-                  ) : (
-                    <div className="flex h-[180px] flex-col items-center justify-center gap-2" style={{ backgroundColor: card.coverColor }}>
-                      <CoverIcon aria-hidden="true" size={28} strokeWidth={1.75} className="text-navy/70" />
-                      <span className="text-[15px] font-semibold leading-5 text-navy">{card.type}</span>
-                    </div>
-                  )}
-                  <div className="p-6">
-                    <div className="text-[12px] font-semibold uppercase leading-4 tracking-[0.04em] text-[#7A5410]">{card.type}</div>
-                    <h3 className="brand-serif mt-2 whitespace-nowrap text-[20px] leading-[1.3] !tracking-normal text-navy sm:text-[24px]">{card.title}</h3>
-                    <a href={card.href} className="mt-3 inline-flex items-center gap-2 text-[14px] font-semibold leading-5 text-blue hover:underline">
-                      Read more <ArrowRight aria-hidden="true" size={16} strokeWidth={1.75} />
-                    </a>
+        <section data-reveal className="bg-[#FFF9E9] px-4 py-12 sm:px-6 sm:py-14 xl:py-16">
+          <div className="mx-auto max-w-[900px]">
+            <header className="max-w-[800px]">
+              <p className="text-[13px] font-semibold uppercase leading-5 tracking-[0.12em] text-[#A87919]">Frequently Asked Questions</p>
+              <h2 className="brand-serif mt-3 text-[30px] font-bold leading-[1.2] !tracking-normal text-navy sm:text-[38px] md:text-[44px]">
+                Questions we hear. Answered plainly.
+              </h2>
+              <p className="mt-4 text-[14px] leading-[1.7] text-[#475775] sm:text-[15px]">
+                We believe informed investors make better investors. Below are the questions asked most often, covering compliance, process, safety, transfers, and tax. If yours isn't here, speak with the team directly.
+              </p>
+            </header>
+            <div className="mt-8 space-y-6 sm:mt-9">
+              {faqCategories.map((category) => (
+                <section key={category.id} aria-labelledby={`faq-category-${category.id}`} className="space-y-2">
+                  <h3 id={`faq-category-${category.id}`} className="text-[13px] font-semibold uppercase leading-5 tracking-[0.11em] text-[#A87919]">
+                    {category.label}
+                  </h3>
+                  <div className="space-y-2">
+                    {category.questions.map((faq, idx) => {
+                      const questionKey = `${category.id}-${idx}`;
+                      const isOpen = activeQuestion === questionKey;
+                      const questionId = `faq-question-${questionKey}`;
+                      const answerId = `faq-answer-${questionKey}`;
+                      return (
+                        <article key={questionKey} className="overflow-hidden rounded-[14px] border border-[#DCE5F1] bg-white">
+                          <button
+                            id={questionId}
+                            type="button"
+                            aria-expanded={isOpen}
+                            aria-controls={answerId}
+                            onClick={() => setActiveQuestion(isOpen ? null : questionKey)}
+                            className="grid min-h-[58px] w-full grid-cols-[42px_minmax(0,1fr)_24px] items-center gap-2 px-4 py-3 text-left sm:min-h-[62px] sm:grid-cols-[48px_minmax(0,1fr)_24px] sm:px-5"
+                          >
+                            <span className="text-[12px] font-semibold tracking-[0.04em] text-[#A87919]">{String(idx + 1).padStart(2, '0')} ·</span>
+                            <span className="min-w-0 text-[13px] font-semibold leading-[1.5] text-navy sm:text-[13px]">{faq.question}</span>
+                            <ChevronDown
+                              aria-hidden="true"
+                              size={17}
+                              strokeWidth={1.8}
+                              className={`justify-self-end text-navy transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                            />
+                          </button>
+                          <div
+                            id={answerId}
+                            role="region"
+                            aria-labelledby={questionId}
+                            aria-hidden={!isOpen}
+                            className="grid transition-[grid-template-rows] duration-300 ease-in-out motion-reduce:transition-none"
+                            style={{ gridTemplateRows: isOpen ? '1fr' : '0fr' }}
+                          >
+                            <div className="min-h-0 overflow-hidden">
+                              <div className="px-4 pb-4 pl-[58px] sm:px-5 sm:pb-5 sm:pl-[73px]">
+                                <FaqAnswer answer={faq.answer} />
+                              </div>
+                            </div>
+                          </div>
+                        </article>
+                      );
+                    })}
                   </div>
-                </article>
-                );
-              })}
-            </div>
-            <div className="mt-8 text-center xl:mt-10">
-              <SecondaryButton size="resources" href="#resources">Visit Resources</SecondaryButton>
-            </div>
-          </div>
-        </section>
-
-        <section data-reveal className="bg-mist px-4 py-[62px] sm:px-6 xl:py-[82px]">
-          <div className="mx-auto max-w-[980px]">
-            <SectionHeader label="FAQs" title="What are you still unsure about?" />
-            <div className="mx-auto mt-10 max-w-[820px] space-y-[14px] xl:mt-12">
-              {faqs.map((faq, idx) => {
-                const isOpen = openFaq === idx;
-                const answerId = `faq-answer-${idx}`;
-                return (
-                  <article key={faq.q} className="overflow-hidden rounded-[20px] border border-[#DCE5F1] bg-white">
-                    <button
-                      type="button"
-                      aria-expanded={isOpen}
-                      aria-controls={answerId}
-                      onClick={() => setOpenFaq(isOpen ? -1 : idx)}
-                      className="flex min-h-[74px] w-full items-center justify-between px-6 text-left sm:px-8"
-                    >
-                      <span className="text-[17px] font-semibold leading-6 text-navy">{faq.q}</span>
-                      {isOpen
-                        ? <Minus aria-hidden="true" size={20} strokeWidth={1.75} className="shrink-0 text-blue" />
-                        : <Plus aria-hidden="true" size={20} strokeWidth={1.75} className="shrink-0 text-blue" />}
-                    </button>
-                    <div
-                      id={answerId}
-                      aria-hidden={!isOpen || !faq.a}
-                      className="grid transition-[grid-template-rows] duration-[250ms] ease-out"
-                      style={{ gridTemplateRows: isOpen && faq.a ? '1fr' : '0fr' }}
-                    >
-                      <div className="overflow-hidden px-6 pb-6 pt-2 text-[15px] leading-6 text-[#475775] sm:px-8">{faq.a}</div>
-                    </div>
-                  </article>
-                );
-              })}
+                </section>
+              ))}
             </div>
           </div>
         </section>
