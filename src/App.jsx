@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { BrowserRouter, Link, Outlet, Route, Routes, useLocation } from 'react-router-dom';
 import {
   ArrowLeftRight,
@@ -39,6 +39,7 @@ import GlobeHero from './components/globe/GlobeHero';
 import { portfolioSeries } from './content';
 
 const navItems = [
+  { label: 'Portfolios', href: '#global-portfolios' },
   { label: 'Why Us', href: '#why-us' },
   { label: 'How it works', href: '#how-it-works' },
   { label: 'About', href: '#about' },
@@ -65,7 +66,8 @@ const pyramidLayers = [
   {
     key: 'conviction',
     name: 'Conviction',
-    desc: 'High growth themes, the technologies of the future',
+    desc: 'High growth themes',
+    bullets: ['Technologies of future', 'Return of innovation', 'Multibaggers'],
     icon: TrendingUp,
     desktopWidth: '56%',
     desktopCopyWidth: '50%',
@@ -76,7 +78,7 @@ const pyramidLayers = [
   {
     key: 'smart-beta',
     name: 'Smart Beta',
-    desc: 'Momentum based ETFs & Stocks',
+    desc: 'Momentum based ETFs Stocks',
     icon: Layers,
     desktopWidth: '72%',
     desktopInset: 11.1,
@@ -646,9 +648,9 @@ function PortfolioShowcase({ variant = 'home' }) {
               ? 'A global ETF portfolio built on the Layered Pyramid, balanced to hold up in every market season. ETFs only, rebalanced every quarter, from US $10,000.'
               : 'Watch your portfolio grow, see how each of the four layers is doing, and know when we rebalance.'}
           </p>
-          <PrimaryButton size="showcase" href="/portfolios/all-weather" className="mt-7">
+          {/* <PrimaryButton size="showcase" href="/portfolios/all-weather" className="mt-7">
             {isSubpage ? 'Start investing' : 'See portfolios'}
-          </PrimaryButton>
+          </PrimaryButton> */}
         </div>
         <div className="flex justify-center xl:justify-end">
           <div
@@ -727,6 +729,59 @@ function GlobalPortfoliosSection() {
   );
 }
 
+function tierWidths(config, width) {
+  const total = config.heights.reduce((sum, height) => sum + height, 0) + config.gap * (config.heights.length - 1);
+  const widthAt = (y) => width * (config.topFrac + (1 - config.topFrac) * (y / total));
+  let y = 0;
+  return config.heights.map((height) => {
+    const topWidth = widthAt(y);
+    const bottomWidth = widthAt(y + height);
+    y += height + config.gap;
+    return { topWidth, bottomWidth };
+  });
+}
+
+function roundedTierPath(points, radius) {
+  let path = '';
+  for (let index = 0; index < points.length; index += 1) {
+    const previous = points[(index + points.length - 1) % points.length];
+    const point = points[index];
+    const next = points[(index + 1) % points.length];
+    const incoming = [previous[0] - point[0], previous[1] - point[1]];
+    const outgoing = [next[0] - point[0], next[1] - point[1]];
+    const incomingLength = Math.hypot(...incoming);
+    const outgoingLength = Math.hypot(...outgoing);
+    const cornerRadius = Math.min(radius, incomingLength / 2, outgoingLength / 2);
+    const start = [
+      point[0] + (incoming[0] / incomingLength) * cornerRadius,
+      point[1] + (incoming[1] / incomingLength) * cornerRadius,
+    ];
+    const end = [
+      point[0] + (outgoing[0] / outgoingLength) * cornerRadius,
+      point[1] + (outgoing[1] / outgoingLength) * cornerRadius,
+    ];
+    path += `${index === 0 ? 'M' : 'L'}${start[0].toFixed(2)},${start[1].toFixed(2)} Q${point[0]},${point[1]} ${end[0].toFixed(2)},${end[1].toFixed(2)} `;
+  }
+  return `${path}Z`;
+}
+
+function usePyramidWidth() {
+  const ref = useRef(null);
+  const [width, setWidth] = useState(0);
+
+  useLayoutEffect(() => {
+    const element = ref.current;
+    if (!element) return undefined;
+    const updateWidth = () => setWidth(element.getBoundingClientRect().width);
+    updateWidth();
+    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(updateWidth);
+    observer?.observe(element);
+    return () => observer?.disconnect();
+  }, []);
+
+  return [ref, width];
+}
+
 function PyramidDirectionArrow({ label, direction, visible }) {
   const isUpward = direction === 'up';
   const description = isUpward
@@ -757,88 +812,109 @@ function PyramidDirectionArrow({ label, direction, visible }) {
 
 function PyramidLayersView() {
   const [layersRef, layersVisible] = useScrollTriggeredInView();
-  const svgPrefix = useId().replace(/[^a-zA-Z0-9_-]/g, '');
+  const [pyramidRef, pyramidWidth] = usePyramidWidth();
+  const uid = useId().replace(/[^a-zA-Z0-9_-]/g, '');
+  const desktop = typeof window !== 'undefined' && window.innerWidth >= 768;
+  const config = desktop
+    ? { heights: [250, 104, 104, 104], gap: 8, topFrac: 0.05, radius: 22 }
+    : { heights: [280, 82, 84, 84], gap: 5, topFrac: 0.1, radius: 16 };
+  const widths = pyramidWidth ? tierWidths(config, pyramidWidth) : [];
+  const pyramidHeight = config.heights.reduce((sum, height) => sum + height, 0) + config.gap * (config.heights.length - 1);
 
   return (
     <div ref={layersRef} className="pyramid-display mx-auto mt-10 grid w-full max-w-[1080px] grid-cols-[28px_minmax(0,1fr)_28px] items-stretch gap-1 sm:grid-cols-[48px_minmax(0,1fr)_48px] sm:gap-2 xl:mt-14 xl:grid-cols-[68px_minmax(0,1fr)_68px] xl:gap-4">
       <div role="group" aria-label="Potential return increases towards the top" className="grid grid-cols-1 items-stretch">
         <PyramidDirectionArrow label="RETURN" direction="up" visible={layersVisible} />
       </div>
-      <div className={`pyramid-assembly mx-auto ${layersVisible ? 'is-visible' : ''}`}>
-        {pyramidLayers.map((layer, idx) => {
-          const Icon = layer.icon;
-          const gradientId = `${svgPrefix}-${layer.key}-front`;
-          const delay = `${(pyramidLayers.length - idx - 1) * 200}ms`;
-          const geometryVariants = layer.key === 'conviction'
-            ? [{ key: 'desktop' }, { key: 'mobile' }]
-            : [
-              { key: 'desktop', inset: layer.desktopInset },
-              { key: 'mobile', inset: layer.mobileInset },
-            ];
+      <div ref={pyramidRef} className={`pyramid-assembly mx-auto ${layersVisible ? 'is-visible' : ''}`} style={{ height: pyramidHeight }}>
+        {pyramidWidth > 0 && (
+          <ol aria-label="The four layers of the pyramid, from boldest to safest" className="flex h-full flex-col" style={{ gap: config.gap }}>
+            {pyramidLayers.map((layer, index) => {
+              const Icon = layer.icon;
+              const height = config.heights[index];
+              const { topWidth, bottomWidth } = widths[index];
+              const center = pyramidWidth / 2;
+              const points = [
+                [center - topWidth / 2, 0],
+                [center + topWidth / 2, 0],
+                [center + bottomWidth / 2, height],
+                [center - bottomWidth / 2, height],
+              ];
+              const path = roundedTierPath(points, config.radius);
+              const gradientId = `${uid}-${layer.key}`;
+              const highlightId = `${uid}-${layer.key}-highlight`;
+              const ink = layer.key === 'conviction' || layer.key === 'smart-beta' ? '#FFFFFF' : '#0F1B45';
+              const delay = `${(pyramidLayers.length - index - 1) * 110}ms`;
+              const usableWidth = topWidth + (bottomWidth - topWidth) * 0.45;
+              const sideInset = layer.key === 'conviction'
+                ? 0
+                : Math.max((pyramidWidth - usableWidth) / 2 + (desktop ? 18 : 10), desktop ? 12 : 8);
 
-          return (
-            <div
-              key={layer.key}
-              className={`pyramid-segment pyramid-segment--${layer.key}`}
-              style={{
-                '--segment-width': layer.desktopWidth,
-                '--segment-inset': `${layer.desktopInset ?? 0}%`,
-                '--segment-copy-width': layer.desktopCopyWidth,
-                '--mobile-segment-width': layer.mobileWidth,
-                '--mobile-segment-inset': `${layer.mobileInset ?? 0}%`,
-                '--mobile-segment-copy-width': layer.mobileCopyWidth,
-                '--layer-delay': delay,
-                '--entry-rotation': idx === 1 ? '5deg' : '2deg',
-              }}
-            >
-              <svg className="pyramid-segment-art" viewBox="0 0 1100 140" preserveAspectRatio="none" aria-hidden="true">
-                <defs>
-                  <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor={layer.colors.frontStart} />
-                    <stop offset="100%" stopColor={layer.colors.frontEnd} />
-                  </linearGradient>
-                </defs>
-                {geometryVariants.map(({ key, inset }) => {
-                  const topLeft = 50 + (inset ?? 0) * 10;
-                  const topRight = 1050 - (inset ?? 0) * 10;
-                  return (
-                    <g key={key} className={`pyramid-geometry pyramid-geometry--${key}`}>
-                      {layer.key === 'conviction' ? (
-                        <>
-                          <polygon points="550,24 522,4 10,118 50,136" fill={layer.colors.left} />
-                          <polygon points="550,24 578,4 1090,118 1050,136" fill={layer.colors.right} />
-                          <polygon points="550,24 578,4 522,4" fill={layer.colors.top} />
-                          <polygon points="550,24 1050,136 50,136" fill={`url(#${gradientId})`} stroke="#FFFFFF" strokeOpacity="0.48" strokeWidth="1.5" />
-                          <path className="pyramid-edge-highlight" d="M550 24L50 136M550 24L1050 136" pathLength="1" />
-                        </>
-                      ) : (
-                        <>
-                          <polygon points={`${topLeft},24 ${topLeft - 40},4 10,118 50,136`} fill={layer.colors.left} />
-                          <polygon points={`${topRight},24 ${topRight + 40},4 1090,118 1050,136`} fill={layer.colors.right} />
-                          <polygon points={`${topLeft},24 ${topRight},24 ${topRight + 40},4 ${topLeft - 40},4`} fill={layer.colors.top} />
-                          <polygon points={`${topLeft},24 ${topRight},24 1050,136 50,136`} fill={`url(#${gradientId})`} stroke="#FFFFFF" strokeOpacity="0.48" strokeWidth="1.5" />
-                          <path className="pyramid-edge-highlight" d={`M${topLeft} 24L50 136M${topRight} 24L1050 136`} pathLength="1" />
-                        </>
-                      )}
-                    </g>
-                  );
-                })}
-              </svg>
-              <div className="pyramid-segment-sweep" aria-hidden="true" />
-              <div className="pyramid-segment-copy">
-                <div className="pyramid-segment-content">
-                  <Icon aria-hidden="true" className="pyramid-segment-icon" strokeWidth={1.8} />
-                  <div className="pyramid-segment-text">
-                    <h3>{layer.name}</h3>
-                    <p>{layer.desc}</p>
+              return (
+                <li
+                  key={layer.key}
+                  className={`pyramid-segment pyramid-segment--${layer.key} ${layersVisible ? 'is-visible' : ''}`}
+                  style={{
+                    height,
+                    '--layer-delay': delay,
+                    '--tier-top-width': `${topWidth}px`,
+                    '--tier-bottom-width': `${bottomWidth}px`,
+                  }}
+                >
+                  <svg aria-hidden="true" width={pyramidWidth} height={height} viewBox={`0 0 ${pyramidWidth} ${height}`} className="absolute left-0 top-0 overflow-visible" style={{ filter: 'drop-shadow(0 8px 16px rgba(33,80,232,0.14))' }}>
+                    <defs>
+                      <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={layer.colors.frontStart} />
+                        <stop offset="100%" stopColor={layer.colors.frontEnd} />
+                      </linearGradient>
+                      <linearGradient id={highlightId} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#FFFFFF" stopOpacity={layer.key === 'conviction' || layer.key === 'smart-beta' ? 0.26 : 0.55} />
+                        <stop offset="55%" stopColor="#FFFFFF" stopOpacity="0" />
+                      </linearGradient>
+                    </defs>
+                    <path d={path} fill={`url(#${gradientId})`} />
+                    <path d={path} fill={`url(#${highlightId})`} />
+                    <path d={path} fill="none" stroke={layer.key === 'conviction' || layer.key === 'smart-beta' ? '#FFFFFF' : '#B5C3EE'} strokeOpacity={layer.key === 'conviction' || layer.key === 'smart-beta' ? 0.22 : 0.7} strokeWidth="1" />
+                  </svg>
+
+                  <div
+                    className={`pyramid-segment-copy ${layer.key === 'conviction' ? 'pyramid-segment-copy--conviction' : 'pyramid-segment-copy--regular'}`}
+                    style={{
+                      color: ink,
+                      paddingLeft: sideInset,
+                      paddingRight: sideInset,
+                      paddingBottom: layer.key === 'conviction' ? (desktop ? 20 : 14) : 0,
+                    }}
+                  >
+                    {layer.key === 'conviction' ? (
+                      <div className="pyramid-conviction-content">
+                        <div className="pyramid-segment-heading">
+                            <Icon aria-hidden="true" className="pyramid-conviction-icon" strokeWidth={1.9} />
+                          <h3>
+                            {layer.name}
+                          </h3>
+                        </div>
+                        <ul>
+                          {layer.bullets.map((bullet) => (
+                            <li key={bullet}><span aria-hidden="true" />{bullet}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : (
+                      <div className="pyramid-segment-content">
+                        <div className="pyramid-segment-heading">
+                          <Icon aria-hidden="true" className="pyramid-segment-icon" strokeWidth={1.9} />
+                          <h3>{layer.name}</h3>
+                        </div>
+                        <p>{layer.desc}</p>
+                      </div>
+                    )}
                   </div>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-        <span className="pyramid-apex-glow" aria-hidden="true" />
-        <span className="pyramid-base-glow" aria-hidden="true" />
+                </li>
+              );
+            })}
+          </ol>
+        )}
       </div>
       <div className="flex items-stretch justify-center">
         <PyramidDirectionArrow label="ALLOCATION %" direction="down" visible={layersVisible} />
@@ -1166,7 +1242,7 @@ function HowItWorksJourney() {
           Minimum US $10,000, top-up from US $1,000. Partial / Full withdrawal anytime.
         </p>
         <div className="journey-sequence mt-8 text-center xl:mt-10" style={{ '--journey-delay': '2860ms' }}>
-          <PrimaryButton size="steps" href="/portfolios/all-weather">Open account</PrimaryButton>
+          <PrimaryButton size="steps" href="https://paasa.com/install-app?utm_source=BrainTreeCapital&utm_medium=Distribution&utm_campaign=referral-by-braintree-capital&utm_content=BRAINWM&utm_term=braintreecapital" target='blank'>Open account</PrimaryButton>
         </div>
       </div>
     </section>
@@ -1211,16 +1287,14 @@ function SiteFooter() {
           <div className="max-w-[410px]">
             <BrandLogo imageClassName="h-[98px] w-[178px] rounded-lg bg-white p-2" />
             <p className="mt-4 text-[15px] leading-[23px] text-[#C5D0E8]">Professionally managed global investment portfolios for Indian residents, NRIs and foreign investors.</p>
-            <p className="mt-3 text-[13px] leading-5 text-[#8FA0C4]">Execution and custody: Stockal (Borderless Softtech Pvt Ltd) and DriveWealth.</p>
           </div>
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-[94px_116px_82px] lg:justify-end lg:gap-x-[70px]">
             <div>
               <h3 className="text-[14px] font-semibold leading-5 text-[#F7CD62]">Explore</h3>
               <ul className="mt-[14px] space-y-[10px] text-[15px] leading-5 text-[#C5D0E8]">
-                <li><Link to="/portfolios/all-weather" className="hover:text-white">Portfolios</Link></li>
+                <li><Link to="/#portfolios" className="hover:text-white">Portfolios</Link></li>
                 <li><Link to="/#why-us" className="hover:text-white">Why Uss</Link></li>
                 <li><Link to="/#how-it-works" className="hover:text-white">How it works</Link></li>
-                <li><Link to="/#resources" className="hover:text-white">Resources</Link></li>
               </ul>
             </div>
             <div>
@@ -1263,7 +1337,7 @@ function AnnouncementBar() {
 }
 
 function Navbar() {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -1277,73 +1351,64 @@ function Navbar() {
   useEffect(() => {
     if (!menuOpen) return undefined;
     const previousOverflow = document.body.style.overflow;
-    const closeOnDesktop = () => {
-      if (window.innerWidth >= 1024) setMenuOpen(false);
+    const closeOnWideScreen = () => {
+      if (window.innerWidth >= 1280) setMenuOpen(false);
     };
     document.body.style.overflow = 'hidden';
-    window.addEventListener('resize', closeOnDesktop);
+    window.addEventListener('resize', closeOnWideScreen);
     return () => {
       document.body.style.overflow = previousOverflow;
-      window.removeEventListener('resize', closeOnDesktop);
+      window.removeEventListener('resize', closeOnWideScreen);
     };
   }, [menuOpen]);
 
   const linkFor = (item) => item.href.startsWith('#')
     ? pathname === '/' ? item.href : `/${item.href}`
     : item.href;
-  const linkClass = (active) => `relative py-2 text-[15px] transition-colors hover:text-navy ${active ? 'font-semibold text-navy after:absolute after:inset-x-0 after:-bottom-2 after:h-0.5 after:bg-blue' : 'font-medium text-[#475775]'}`;
+  const linkClass = (active) => `relative whitespace-nowrap py-2 text-[14px] transition-colors hover:text-navy 2xl:text-[15px] ${active ? 'font-semibold text-navy after:absolute after:inset-x-0 after:-bottom-2 after:h-0.5 after:bg-blue' : 'font-medium text-[#475775]'}`;
+  const isActive = (item) => {
+    if (item.label === 'Portfolios') return pathname === '/' && hash === '#global-portfolios';
+    if (item.label === 'Why Us') return pathname === '/' && hash === '#why-us';
+    return false;
+  };
 
   return (
     <header className={`sticky top-0 z-50 border-b border-transparent bg-white/90 backdrop-blur-[12px] transition-[border-color,box-shadow] duration-200 ${scrolled ? 'border-[#DCE5F1] shadow-[0_4px_20px_rgba(10,27,61,0.06)]' : ''}`}>
-      <nav className="mx-auto grid h-[79px] w-[calc(100%-32px)] max-w-[1280px] grid-cols-[1fr_auto_1fr] items-center gap-4 sm:w-[calc(100%-48px)]">
+      <nav className="mx-auto flex h-[79px] w-[calc(100%-32px)] max-w-[1280px] items-center justify-between gap-2 sm:w-[calc(100%-48px)] xl:gap-6">
         <BrandLogo className="justify-self-start" />
-        <div className="hidden items-center gap-8 whitespace-nowrap lg:flex">
+        <div className="hidden min-w-0 items-center justify-center gap-5 whitespace-nowrap xl:mx-auto xl:flex 2xl:gap-8">
           {navItems.map((item) => {
-            const active = item.label === 'Why Us' && pathname === '/';
+            const active = isActive(item);
             const href = linkFor(item);
-            return item.href.startsWith('#') ? (
-              <a key={item.label} href={href} className={linkClass(active)}>{item.label}</a>
-            ) : (
-              <Link key={item.label} to={href} className={linkClass(active)}>{item.label}</Link>
-            );
+            return <Link key={item.label} to={href} className={linkClass(active)}>{item.label}</Link>;
           })}
         </div>
-        <div className="flex items-center justify-self-end gap-4">
-          <button type="button" aria-label="Search" className="hidden h-5 w-5 items-center justify-center text-navy lg:inline-flex">
-            <Search aria-hidden="true" size={20} strokeWidth={1.75} />
-          </button>
-          <a href={AUTH_URL} target="_blank" rel="noopener noreferrer" className="hidden whitespace-nowrap text-[14px] font-medium text-navy lg:inline-flex">Log in / Sign up</a>
-          <a href={AUTH_URL} target="_blank" rel="noopener noreferrer" className="primary-button hidden h-11 items-center whitespace-nowrap rounded-xl bg-blue px-4 text-[14px] font-semibold text-white lg:inline-flex">Start investing</a>
-          <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" className="hidden h-11 items-center whitespace-nowrap rounded-xl border border-[#D6E1F0] bg-white px-4 text-[14px] font-semibold text-navy transition-colors hover:bg-[#F4F7FB] lg:inline-flex">Speak with us</a>
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3 xl:gap-2">
+          <a href={AUTH_URL} target="_blank" rel="noopener noreferrer" className="hidden h-10 items-center justify-center rounded-xl border border-[#D6E1F0] px-3 text-[13px] font-semibold text-navy transition-colors hover:border-[#AFC2E3] hover:bg-[#F7F9FD] xl:inline-flex 2xl:px-4 2xl:text-[14px]">Log in</a>
+          <a href={AUTH_URL} target="_blank" rel="noopener noreferrer" className="hidden h-10 items-center justify-center rounded-xl bg-blue px-3 text-[13px] font-semibold text-white shadow-[0_3px_8px_rgba(33,80,232,0.18)] transition-colors hover:bg-[#1B44C8] xl:inline-flex 2xl:px-4 2xl:text-[14px]">Sign up</a>
           <button
             type="button"
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen(!menuOpen)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-navy focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue lg:hidden"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-navy focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue xl:hidden"
           >
             {menuOpen ? <X aria-hidden="true" size={22} /> : <Menu aria-hidden="true" size={22} />}
           </button>
         </div>
       </nav>
       {menuOpen && (
-        <div className="absolute inset-x-0 top-full min-h-[calc(100dvh-79px)] overflow-y-auto overscroll-contain border-b border-[#DCE5F1] bg-white px-6 pb-5 pt-2 shadow-[0_12px_24px_rgba(10,27,61,0.08)] lg:hidden">
+        <div className="absolute inset-x-0 top-full min-h-[calc(100dvh-79px)] overflow-y-auto overscroll-contain border-b border-[#DCE5F1] bg-white px-6 pb-5 pt-2 shadow-[0_12px_24px_rgba(10,27,61,0.08)] xl:hidden">
           <div className="mx-auto flex max-w-[1280px] flex-col">
             {navItems.map((item) => {
-              const active = item.label === 'Why Us' && pathname === '/';
+              const active = isActive(item);
               const href = linkFor(item);
-              return item.href.startsWith('#') ? (
-                <a key={item.label} href={href} onClick={() => setMenuOpen(false)} className={`${linkClass(active)} border-b border-[#EEF2F8] py-3`}>{item.label}</a>
-              ) : (
-                <Link key={item.label} to={href} onClick={() => setMenuOpen(false)} className={`${linkClass(active)} border-b border-[#EEF2F8] py-3`}>{item.label}</Link>
-              );
+              return <Link key={item.label} to={href} onClick={() => setMenuOpen(false)} className={`${linkClass(active)} border-b border-[#EEF2F8] py-3`}>{item.label}</Link>;
             })}
-            <button type="button" aria-label="Search" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 border-b border-[#EEF2F8] py-3 text-left text-[15px] font-medium text-[#475775]">
-              <Search aria-hidden="true" size={20} strokeWidth={1.75} /> Search
-            </button>
-            <a href={AUTH_URL} target="_blank" rel="noopener noreferrer" onClick={() => setMenuOpen(false)} className="border-b border-[#EEF2F8] py-3 text-left text-[15px] font-medium text-[#475775]">Log in / Sign up</a>
-            <a href={AUTH_URL} target="_blank" rel="noopener noreferrer" onClick={() => setMenuOpen(false)} className="primary-button mt-4 inline-flex h-11 items-center justify-center rounded-xl bg-blue px-5 text-[15px] font-semibold text-white">Start investing</a>
-            <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" onClick={() => setMenuOpen(false)} className="mt-3 inline-flex h-11 items-center justify-center rounded-xl border border-[#D6E1F0] bg-white px-5 text-[15px] font-semibold text-navy">Speak with us</a>
+            <div className="mt-5 grid grid-cols-2 gap-3">
+              <a href={AUTH_URL} target="_blank" rel="noopener noreferrer" onClick={() => setMenuOpen(false)} className="inline-flex h-11 items-center justify-center rounded-xl border border-[#D6E1F0] px-4 text-[14px] font-semibold text-navy transition-colors hover:border-[#AFC2E3] hover:bg-[#F7F9FD]">Log in</a>
+              <a href={AUTH_URL} target="_blank" rel="noopener noreferrer" onClick={() => setMenuOpen(false)} className="primary-button inline-flex h-11 items-center justify-center rounded-xl bg-blue px-4 text-[14px] font-semibold text-white shadow-[0_3px_8px_rgba(33,80,232,0.18)] hover:bg-[#1B44C8]">Sign up</a>
+            </div>
           </div>
         </div>
       )}
@@ -1420,9 +1485,34 @@ function PyramidSection() {
           <p className="mx-auto mt-4 max-w-[680px] text-[18px] leading-[1.5] text-[#475775]">Four layers of ETFs, from the safest at the base to the boldest at the top.</p>
         </header>
         <PyramidLayersView />
-        <div className="mx-auto mt-9 max-w-[860px] rounded-3xl bg-gold-tint p-5 text-left sm:p-7 md:mt-14 md:p-9">
-          <h3 className="brand-serif text-[28px] leading-[1.25] !tracking-normal text-navy">The barbell approach</h3>
-          <p className="mt-3 text-[16px] leading-6 text-[#475775]">A capital-preservation core compounded with a bounded high-conviction growth sleeve — sized so that even a complete drawdown of the growth side cannot materially impair the core.</p>
+        <div className="mx-auto mt-9 w-full max-w-[860px] rounded-[28px] bg-[#FBF1D0] px-5 py-7 text-left sm:px-7 md:mt-14 md:px-9 md:py-9">
+          <h3 className="brand-serif text-[24px] leading-tight !tracking-normal text-navy md:text-[30px]">The barbell approach</h3>
+          <p className="mt-3 text-[14.5px] leading-[1.65] text-[#475775] md:text-[15.5px]">
+            A capital-preservation core compounded with a bounded high-conviction growth sleeve, sized so that even a complete drawdown of the growth side cannot materially impair the core.
+          </p>
+
+          <div className="mt-7 grid grid-cols-[minmax(0,1fr)_30px_minmax(0,1fr)] items-stretch md:mt-9 md:grid-cols-[minmax(0,1fr)_90px_minmax(0,1fr)]">
+            <div className="flex flex-col items-center justify-center rounded-[14px] border border-[#C9D4EE] bg-[#FFF9E6] px-3 py-5 text-center md:py-7">
+              <div className="brand-serif text-[28px] leading-none !tracking-normal text-navy md:text-[52px]">70–80%</div>
+              <div className="mt-3 text-[10px] font-semibold uppercase leading-[1.35] tracking-[0.18em] text-[#475775] md:text-[11.5px]">
+                Preservation core
+              </div>
+            </div>
+
+            <div aria-hidden="true" className="relative flex items-center justify-center">
+              <div className="h-[6px] w-full bg-[#A9B6CF]" />
+              <div className="absolute flex h-[26px] w-[26px] items-center justify-center rounded-full border-[4px] border-[#A9B6CF] bg-[#FBF1D0] md:h-[44px] md:w-[44px] md:border-[5px]">
+                <span className="h-[8px] w-[8px] rounded-full bg-[#7C8BA6] md:h-[14px] md:w-[14px]" />
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center justify-center rounded-[14px] border border-[#E6D08C] bg-[#FBF1D0] px-3 py-5 text-center md:py-7">
+              <div className="brand-serif text-[28px] leading-none !tracking-normal text-[#9A6B12] md:text-[52px]">20–30%</div>
+              <div className="mt-3 text-[10px] font-semibold uppercase leading-[1.35] tracking-[0.18em] text-[#475775] md:text-[11.5px]">
+                Growth sleeve
+              </div>
+            </div>
+          </div>
         </div>
         <div className="mt-10 flex flex-wrap justify-center gap-3">
           {pyramidChips.map((chip) => (
@@ -1537,7 +1627,7 @@ function HeroPhrases() {
   const phraseClass = `hero-phrase${isVisible ? ' is-visible' : ''}`;
 
   return (
-    <div ref={revealRef} className="mt-7 flex flex-wrap items-center gap-2 text-[18px] font-bold leading-5 text-[#000] xl:mt-8">
+    <div ref={revealRef} className="mt-7 flex flex-wrap items-center gap-2 text-[18px] md:font-semibold md:font-bold leading-5 text-[#000] xl:mt-8">
       <span className={phraseClass} style={{ '--reveal-delay': '0ms' }}>Multi Assets</span>
       <span className="text-[#475775]">|</span>
       <span className={phraseClass} style={{ '--reveal-delay': '350ms' }}>Multi Industry</span>
@@ -1607,7 +1697,7 @@ function HomePage() {
               <div className="grid items-start gap-2 xl:grid-cols-[minmax(0,640px)_minmax(0,560px)] xl:gap-10">
                 <div>
                   {/* <div className="inline-flex rounded-full bg-[#fff4d6] px-[14px] py-[6px] text-[13px] font-medium leading-[18px] text-[#7a5410]">Managed ETF portfolios</div> */}
-                  <h1 className="hero-title brand-serif mt-1 max-w-[640px] text-[30px] leading-[1.05] tracking-normal text-navy xl:mt-5 xl:text-[58px] xl:leading-[1.15]">Your wealth<br className="hidden xl:block" />Without Borders</h1>
+                  <h1 className="hero-title brand-serif mt-1 max-w-[640px] text-[40px] leading-[1.05] tracking-normal text-navy xl:mt-5 xl:text-[58px] xl:leading-[1.15]">Your Wealth<br/>Without Borders</h1>
 
                   <HeroPhrases />
 
@@ -1700,10 +1790,11 @@ function HomePage() {
           </div>
         </section>
 
-        <PyramidSection />
-
         <PortfolioShowcase />
+
         <GlobalPortfoliosSection />
+        
+        <PyramidSection />
 
         <section className="bg-[#0A1B3D] px-4 py-[62px] sm:px-6 xl:py-[82px]">
           <div className="mx-auto max-w-[1256px]">
@@ -1720,7 +1811,7 @@ function HomePage() {
                 </article>
               ))}
             </div>
-/          </div>
+          </div>
         </section>
 
         <section data-reveal className="bg-mist px-4 py-[62px] sm:px-6 xl:py-[82px]">
