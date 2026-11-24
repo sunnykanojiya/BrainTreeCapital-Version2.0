@@ -223,7 +223,7 @@ const faqCategories = [
         },
       },
       {
-        question: "What are the specific benefits of investing in ShiftAltCap's global portfolios?",
+        question: "What are the specific benefits of investing in BrainTree Capital's global portfolios?",
         answer: {
           blocks: [
             { type: 'paragraph', text: 'By choosing to invest in either or both our portfolios, you gain 7 distinct benefits:' },
@@ -268,7 +268,7 @@ const faqCategories = [
         question: 'How safe is the platform?',
         answer: {
           blocks: [
-            { type: 'paragraph', text: 'The platform is secured with 256-bit encryption — a higher standard than most banking platforms. The platform is owned by Stockal (Borderless Softech Pvt Ltd), and ShiftAltCap has partnered with Stockal to execute transactions through DriveWealth, a broker registered with the SEC in the USA.' },
+            { type: 'paragraph', text: 'The platform is secured with 256-bit encryption — a higher standard than most banking platforms. The platform is owned by Paasa (Borderless Softech Pvt Ltd), and ShiftAltCap has partnered with Stockal to execute transactions through DriveWealth, a broker registered with the SEC in the USA.' },
             { type: 'paragraph', text: 'Think of Stockal as a regulated digital bridge that enables citizens of one country to access and invest in markets of another in a fully compliant manner.' },
           ],
           highlight: '256-bit encryption · DriveWealth (SEC-registered) · SIPC insured up to US $500,000 · JP Morgan Chase custodian',
@@ -1772,7 +1772,6 @@ function HomePage() {
               <h2 className="brand-serif mx-auto mt-4 max-w-[760px] text-[36px] leading-[1.15] !tracking-normal text-navy md:text-[48px]">
                 Most picks start with a tip, not<br className="hidden md:block" /> research.
               </h2>
-              <p className="mt-4 text-[18px] leading-[1.5] text-[#475775]">Three common ways in, and why they often fall short.</p>
             </header>
             <div data-reveal className="what-goes-wrong-panel mx-auto mt-8 w-full max-w-[1172px] rounded-[28px] bg-navy px-5 py-7 text-white sm:px-7 md:p-10 xl:mt-12">
               <h3 className="brand-serif text-[28px] leading-[1.2] !tracking-normal text-white">What goes wrong</h3>
