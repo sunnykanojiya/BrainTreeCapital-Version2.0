@@ -1,0 +1,61 @@
+import { Globe2, Layers, LineChart, RefreshCw, ShieldCheck, TrendingUp } from 'lucide-react';
+
+export const pyramidLayers = [
+  {
+    key: 'conviction',
+    name: 'Conviction',
+    desc: 'High growth themes',
+    bullets: ['Technologies of future', 'Return of innovation', 'Multibaggers'],
+    icon: TrendingUp,
+    desktopWidth: '56%',
+    desktopCopyWidth: '50%',
+    mobileWidth: '80%',
+    mobileCopyWidth: '50%',
+    colors: { frontStart: '#1743B8', frontEnd: '#2F5FE5', top: '#6788EA', left: '#153990', right: '#102F7E' },
+  },
+  {
+    key: 'smart-beta',
+    name: 'Smart Beta',
+    desc: 'Momentum based ETFs Stocks',
+    icon: Layers,
+    desktopWidth: '72%',
+    desktopInset: 11.1,
+    desktopCopyWidth: '86%',
+    mobileWidth: '86%',
+    mobileInset: 3.5,
+    mobileCopyWidth: '91%',
+    colors: { frontStart: '#526EC9', frontEnd: '#7C96E8', top: '#A5B7ED', left: '#4961AE', right: '#3D559D' },
+  },
+  {
+    key: 'core-equity',
+    name: 'Core Equity',
+    desc: 'Owns the broad global markets through index ETFs',
+    icon: Globe2,
+    desktopWidth: '88%',
+    desktopInset: 9.1,
+    desktopCopyWidth: '90%',
+    mobileWidth: '93%',
+    mobileInset: 3.8,
+    mobileCopyWidth: '93%',
+    colors: { frontStart: '#AFC3ED', frontEnd: '#D0DCF5', top: '#EFF4FD', left: '#94A9D2', right: '#839AC4' },
+  },
+  {
+    key: 'defensive-income',
+    name: 'Defensive and Income',
+    desc: 'Preserves your capital and generates steady returns',
+    icon: ShieldCheck,
+    desktopWidth: '100%',
+    desktopInset: 6,
+    desktopCopyWidth: '88%',
+    mobileWidth: '100%',
+    mobileInset: 3.5,
+    mobileCopyWidth: '92%',
+    colors: { frontStart: '#DDE6F4', frontEnd: '#F8FAFE', top: '#FFFFFF', left: '#C7D2E4', right: '#B6C5DA' },
+  },
+];
+
+export const pyramidChips = [
+  { text: 'Created Mathematically with Low Correlation', icon: LineChart },
+  { text: 'Rebalanced once a quarter', icon: RefreshCw },
+  { text: 'Aims for Better Risk Adjusted Returns', icon: ShieldCheck },
+];
