@@ -2,7 +2,7 @@ import { KeyRound, ShieldCheck, Smartphone, Unlock } from 'lucide-react';
 import SectionHeader from '../common/SectionHeader';
 
 const safetyCards = [
-  { title: 'Compliant with US and Indian regulations.', desc: 'SIPC member custody and an SEC registered broker-dealer, through DriveWealth.', icon: ShieldCheck },
+  { title: 'Compliant with US and Indian regulations.', desc: 'SIPC member custody and an SEC registered broker-dealer, through IBKR.', icon: ShieldCheck },
   { title: 'Fully digital KYC', desc: 'Verify online in about a day. No branch visits.', icon: Smartphone },
   { title: 'You own what you hold', desc: 'Securities sit in your name, and you control them.', icon: KeyRound },
   { title: 'No lock-in, no exit fee', desc: 'You can Top Up & Withdraw fully or partly anytime.', icon: Unlock },

@@ -9,6 +9,7 @@ const navItems = [
   { label: 'Why Us', href: '#why-us' },
   { label: 'How it works', href: '#how-it-works' },
   { label: 'About', href: '#about' },
+  { label: 'Contact Us', href: '/contact' },
 ];
 
 const AUTH_URL = APP_INSTALL_URL;
@@ -46,6 +47,7 @@ export default function Navbar() {
   const isActive = (item) => {
     if (item.label === 'Portfolios') return pathname === '/' && hash === '#global-portfolios';
     if (item.label === 'Why Us') return pathname === '/' && hash === '#why-us';
+    if (item.label === 'Contact Us') return pathname === '/contact';
     return false;
   };
 

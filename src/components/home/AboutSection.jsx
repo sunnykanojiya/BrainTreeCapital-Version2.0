@@ -37,7 +37,7 @@ const teamAdvisor = {
   name: 'Himanshu Verma',
   role: 'BOARD ADVISOR',
   credentials: 'Board Advisor and founder of ShiftAltCap',
-  biography: "Chartered Accountant and former Senior Vice President at Cognizant, where he led the Digital business unit serving clients including Alphabet, Microsoft, Meta, Apple and Stripe. Now serves on the boards of several companies while building ShiftAlt Capital. A keen investor himself, he brings a technology operator's lens to wealth building — and is passionate about helping fellow HNIs navigate the path to US market exposure.",
+  biography: "Chartered Accountant and former Senior Vice President at Cognizant, where he led the Digital business unit serving clients including Alphabet, Microsoft, Meta, Apple and Stripe. Now serves on the boards of several companies while building ShiftAlt Capital. A keen investor himself, he brings a technology operator's lens to wealth building - and is passionate about helping fellow HNIs navigate the path to US market exposure.",
   tags: [],
   image: '/team/himanshu-verma.png',
 };

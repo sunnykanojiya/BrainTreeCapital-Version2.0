@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import BrandLogo from '../common/BrandLogo';
+import { CONTACT_PAGE_URL } from '../../constants/siteLinks';
 
 export default function SiteFooter() {
   return (
@@ -23,7 +24,7 @@ export default function SiteFooter() {
               <h3 className="text-[14px] font-semibold leading-5 text-[#F7CD62]">Company</h3>
               <ul className="mt-[14px] space-y-[10px] text-[15px] leading-5 text-[#C5D0E8]">
                 <li><Link to="/#about" className="hover:text-white">About and team</Link></li>
-                <li><a href="#contact" className="hover:text-white">Contact</a></li>
+                <li><a href={CONTACT_PAGE_URL} target="_blank" rel="noopener noreferrer" className="hover:text-white">Contact Us →</a></li>
               </ul>
             </div>
             <div>
@@ -37,7 +38,7 @@ export default function SiteFooter() {
           </div>
         </div>
         <div className="mt-10 h-px bg-[#24407F]" />
-        <p className="mt-6 text-[12.5px] leading-5 text-[#8FA0C4]">All investments involve risk and returns will fluctuate. Past performance does not guarantee future results. Tax treatment depends on your residency and circumstances. Any portfolio figures shown are hypothetical. Wording to be confirmed with compliance.</p>
+        <p className="mt-6 text-[12.5px] leading-5 text-[#8FA0C4]">All investments involve risk and returns will fluctuate. Past performance does not guarantee future results. Tax treatment depends on your residency and circumstances. Any portfolio figures shown are hypothetical.</p>
       </div>
     </footer>
   );

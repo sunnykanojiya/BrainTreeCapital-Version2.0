@@ -25,7 +25,7 @@ export default function Hero() {
   const heroRef = useRef(null);
 
   return (
-    <section ref={heroRef} className="relative h-[120vh] md:h-[125vh]">
+    <section ref={heroRef} className="relative min-h-[120vh] md:min-h-[125vh]">
       <div className="sticky top-[80px] flex min-h-[calc(100vh-80px)] items-start xl:min-h-0">
         <div className="mx-auto w-[calc(100%-32px)] max-w-[1280px] pb-2 pt-6 md:pt-8 xl:pb-0 xl:pt-12">
           <div className="grid items-start gap-2 xl:grid-cols-[minmax(0,640px)_minmax(0,560px)] xl:gap-10">
